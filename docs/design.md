@@ -20,7 +20,11 @@ produces a **report only** — it does not download, install, or run models.
 Six small, independently testable units under `src/peyk/`:
 
 1. **`profiler/`** — Hardware detection. Linux-first, degrades gracefully on
-   macOS/Windows. Output: normalized `HardwareProfile`.
+   macOS/Windows. Output: normalized `HardwareProfile`. Baseline uses psutil +
+   vendor CLIs; an optional deep probe (`profiler/probe.py` + bundled
+   `scripts/collect_*.{sh,ps1}`) shells out to native tools (dmidecode, lscpu,
+   system_profiler, CIM) for RAM type/speed/DIMMs and exact chip, yielding a
+   *measured* memory bandwidth. Enabled via `--deep` / `--sudo`.
 2. **`sources/`** — Pluggable model catalog providers implementing a common
    `Source` protocol: `CuratedSource` (bundled JSON, source of truth for
    quality/language metadata), `OllamaSource` (registry manifest sizes,

@@ -48,7 +48,7 @@ peyk = "peyk.cli:main"
 where = ["src"]
 
 [tool.setuptools.package-data]
-peyk = ["sources/data/*.json", "py.typed"]
+peyk = ["sources/data/*.json", "scripts/*.sh", "scripts/*.ps1", "py.typed"]
 
 [tool.pytest.ini_options]
 pythonpath = ["src"]

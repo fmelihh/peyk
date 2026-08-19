@@ -98,11 +98,36 @@ peyk --context 32768              # size for a target context length
 peyk --top 10                     # show more models per criterion
 peyk --cross-check                # verify sizes live via Ollama + HuggingFace
 peyk --discover                   # pull in trending GGUF models from HuggingFace
+peyk --deep                       # native probe: RAM type/speed, exact chip
+sudo peyk --sudo                  # deepest probe: measured memory bandwidth
 peyk --json                       # machine-readable output (for CI / scripts)
 peyk --markdown report.md         # write a shareable Markdown report
 ```
 
 `--use-case` accepts `chat`, `coding`, `summarize`, or `embedding`.
+
+### Deep hardware probe (`--deep` / `--sudo`)
+
+By default `peyk` reads hardware with portable Python (psutil) plus vendor CLIs.
+For a sharper picture it ships native probe scripts that call system tools
+directly:
+
+| Platform | Script | Extra tools |
+|---|---|---|
+| Linux   | `collect_linux.sh`   | `lscpu`, `nvidia-smi`/`rocm-smi`, `dmidecode` (root) |
+| macOS   | `collect_macos.sh`   | `sysctl`, `system_profiler` |
+| Windows | `collect_windows.ps1`| CIM/WMI, `nvidia-smi` |
+
+- **`--deep`** runs the script for your OS and adds RAM type/speed, DIMM count,
+  and the exact chip name (e.g. `Apple M3 Max`, which fixes the bandwidth model).
+- **`--sudo`** (Linux) additionally runs `dmidecode`, turning the memory
+  bandwidth from a table *estimate* into a *measured* value derived from your
+  actual DIMM speed and channel count — the single biggest input to the token/s
+  estimate for CPU inference. Run as `sudo peyk --sudo`, or `peyk --sudo` and
+  enter your password at the prompt.
+
+The scripts are bundled with the package and are pure read-only inspection;
+`peyk` still works without them (it just falls back to the baseline profile).
 
 ### Example (CPU + JSON, e.g. inside CI)
 
@@ -138,7 +163,8 @@ back to the curated catalog and still produces a report.
 
 ## How it works
 
-1. `profiler/` normalizes the host into a `HardwareProfile`.
+1. `profiler/` normalizes the host into a `HardwareProfile` (baseline via psutil;
+   optional native probe scripts enrich it under `--deep`/`--sudo`).
 2. `sources/` assembles the catalog (bundled JSON + optional live cross-check /
    discovery).
 3. `estimator.py` computes per-variant memory need (weights + KV cache +

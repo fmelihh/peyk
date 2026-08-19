@@ -25,17 +25,22 @@ class HardwareProfile(BaseModel):
 
     os: str
     arch: str
+    cpu_model: Optional[str] = None
     cpu_cores_physical: int
     cpu_cores_logical: int
     cpu_flags: List[str] = Field(default_factory=list)
     ram_total_gb: float
     ram_available_gb: float
+    ram_type: Optional[str] = None          # e.g. DDR5, LPDDR5 (deep probe)
+    ram_speed_mtps: Optional[int] = None     # transfer rate in MT/s (deep probe)
+    ram_channels: Optional[int] = None       # populated DIMMs / channels (deep probe)
     accelerator: Accelerator = Accelerator.NONE
     accelerator_name: Optional[str] = None
     gpu_count: int = 0
     vram_total_gb: float = 0.0  # aggregate across all GPUs of this accelerator
     unified_memory: bool = False
     mem_bandwidth_gbs: float = 0.0
+    mem_bandwidth_source: str = "estimated"  # "measured" once derived from DIMM specs
 
     @property
     def memory_pool_gb(self) -> float:

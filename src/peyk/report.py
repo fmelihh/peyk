@@ -33,21 +33,29 @@ CRITERION_LABEL = {
 def _hardware_panel(rec: Recommendation) -> Panel:
     hw = rec.hw
     accel = hw.accelerator.value + (f" ({hw.accelerator_name})" if hw.accelerator_name else "")
+    cpu_desc = f" {hw.cpu_model}" if hw.cpu_model else ""
     lines = [
         f"[bold]OS/Arch:[/bold] {hw.os} / {hw.arch}",
-        f"[bold]CPU:[/bold] {hw.cpu_cores_physical} cores "
+        f"[bold]CPU:[/bold]{cpu_desc} — {hw.cpu_cores_physical} cores "
         f"({hw.cpu_cores_logical} threads)  flags: {', '.join(hw.cpu_flags) or '-'}",
         f"[bold]RAM:[/bold] {hw.ram_available_gb:.1f} / {hw.ram_total_gb:.1f} GB free",
-        f"[bold]Accelerator:[/bold] {accel}",
     ]
+    if hw.ram_type or hw.ram_speed_mtps:
+        ram_spec = " ".join(
+            p for p in (hw.ram_type, f"{hw.ram_speed_mtps} MT/s" if hw.ram_speed_mtps else None,
+                        f"x{hw.ram_channels} DIMM" if hw.ram_channels else None) if p
+        )
+        lines.append(f"[bold]RAM spec:[/bold] {ram_spec}")
+    lines.append(f"[bold]Accelerator:[/bold] {accel}")
     if hw.vram_total_gb:
         gpu_note = f" (across {hw.gpu_count} GPUs)" if hw.gpu_count > 1 else ""
         lines.append(f"[bold]VRAM:[/bold] {hw.vram_total_gb:.1f} GB{gpu_note}")
     if hw.unified_memory:
         lines.append("[bold]Memory:[/bold] unified (shared RAM/VRAM pool)")
+    bw_tag = "measured" if hw.mem_bandwidth_source == "measured" else "est."
     lines.append(
         f"[bold]Usable memory pool (for sizing):[/bold] {hw.memory_pool_gb:.1f} GB  "
-        f"| [bold]Bandwidth (est.):[/bold] ~{hw.mem_bandwidth_gbs:.0f} GB/s"
+        f"| [bold]Bandwidth ({bw_tag}):[/bold] ~{hw.mem_bandwidth_gbs:.0f} GB/s"
     )
     return Panel("\n".join(lines), title="Hardware Profile", border_style="cyan")
 

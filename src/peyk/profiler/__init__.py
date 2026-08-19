@@ -15,11 +15,12 @@ from ..models import Accelerator, HardwareProfile
 from .accelerators import detect_accelerator
 from .bandwidth import estimate_bandwidth
 from .cpu import cpu_flags
+from .probe import enrich_profile, run_probe
 
 GB = 1024 ** 3
 
 
-def detect() -> HardwareProfile:
+def detect(deep: bool = False, allow_sudo: bool = False) -> HardwareProfile:
     vm = psutil.virtual_memory()
     ram_total = round(vm.total / GB, 1)
     ram_avail = round(vm.available / GB, 1)
@@ -41,6 +42,9 @@ def detect() -> HardwareProfile:
         unified_memory=acc.unified,
     )
     profile.mem_bandwidth_gbs = estimate_bandwidth(profile)
+
+    if deep:
+        profile = enrich_profile(profile, run_probe(allow_sudo=allow_sudo))
     return profile
 
 

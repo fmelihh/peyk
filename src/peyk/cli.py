@@ -36,6 +36,12 @@ def _parse_args(argv: Optional[List[str]] = None) -> argparse.Namespace:
                    help="Verify sizes live via Ollama/HF (requires internet)")
     p.add_argument("--discover", action="store_true",
                    help="Discover trending GGUF models from HuggingFace (requires internet)")
+    p.add_argument("--deep", action="store_true",
+                   help="Run native probe scripts for richer hardware info "
+                        "(RAM type/speed, exact chip)")
+    p.add_argument("--sudo", action="store_true",
+                   help="Allow the deep probe to use sudo (Linux: dmidecode for "
+                        "measured memory bandwidth); implies --deep")
     p.add_argument("--json", action="store_true", help="Emit machine-readable JSON")
     p.add_argument("--markdown", metavar="FILE", help="Write the report to a Markdown file")
     p.add_argument("--version", action="version", version=f"peyk {__version__}")
@@ -45,12 +51,13 @@ def _parse_args(argv: Optional[List[str]] = None) -> argparse.Namespace:
 def main(argv: Optional[List[str]] = None) -> int:
     args = _parse_args(argv)
     console = Console()
+    status = Console(stderr=True)  # progress notes go to stderr, keeping stdout clean
     languages = [l.strip() for l in args.languages.split(",") if l.strip()]
 
     wants_network = (args.cross_check or args.discover) and not args.offline
     offline = not wants_network
     if wants_network:
-        console.print("[dim]Fetching live data from sources (this may take a moment)...[/dim]")
+        status.print("[dim]Fetching live data from sources (this may take a moment)...[/dim]")
     candidates = build_catalog(
         offline=offline, cross_check=args.cross_check, discover=args.discover
     )
@@ -58,9 +65,12 @@ def main(argv: Optional[List[str]] = None) -> int:
         discovered = sum(
             1 for c in candidates for v in c.variants if v.source == "hf-discovered"
         )
-        console.print(f"[dim]HuggingFace discovery: added {discovered} new variants.[/dim]")
+        status.print(f"[dim]HuggingFace discovery: added {discovered} new variants.[/dim]")
 
-    hw = detect()
+    deep = args.deep or args.sudo
+    if deep:
+        status.print("[dim]Running native hardware probe...[/dim]")
+    hw = detect(deep=deep, allow_sudo=args.sudo)
     rec = recommend(
         hw=hw,
         candidates=candidates,
@@ -72,7 +82,7 @@ def main(argv: Optional[List[str]] = None) -> int:
     if args.markdown:
         with open(args.markdown, "w", encoding="utf-8") as fh:
             fh.write(to_markdown(rec, top=args.top))
-        console.print(f"[green]Markdown report written to:[/green] {args.markdown}")
+        status.print(f"[green]Markdown report written to:[/green] {args.markdown}")
 
     if args.json:
         print(to_json(rec))

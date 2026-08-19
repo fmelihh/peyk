@@ -1,10 +1,15 @@
-# peyk
+<p align="center">
+  <img src="assets/logo.svg" alt="peyk" width="440">
+</p>
 
-**Right-size local LLMs to your hardware.** `peyk` inspects the machine it runs
-on and tells you which *current, locally-runnable* LLM models that machine can
-actually run — ranked across speed, quality, language support, context length,
-and license. It produces a **report only**: it never downloads, installs, or
-runs a model.
+<p align="center">
+  <b>Right-size local LLMs to your hardware.</b>
+</p>
+
+`peyk` inspects the machine it runs on and tells you which *current,
+locally-runnable* LLM models that machine can actually run — ranked across
+speed, quality, language support, context length, and license. It produces a
+**report only**: it never downloads, installs, or runs a model.
 
 ## Why the name?
 
@@ -145,6 +150,40 @@ peyk --json --use-case chat | jq '.models[] | select(.tier=="FITS") | .model' | 
   (`curated` / `ollama` / `HF✓` / `HF discover`).
 - **Top-by-criterion** tables — best models for Speed, Quality, Language,
   Context, and License.
+
+## Examples
+
+Ready-to-run recipes and real sample outputs live in
+[`examples/`](examples/) ([`examples/README.md`](examples/README.md)).
+
+```bash
+# Best all-round model for chat, favoring Turkish + English
+peyk --use-case chat --languages tr,en
+
+# Coding model sized for a 32k context window
+peyk --use-case coding --context 32768
+
+# GPU server: aggregate multi-GPU VRAM and verify sizes live
+peyk --cross-check --top 10
+
+# CPU box: measured memory bandwidth via dmidecode
+sudo peyk --sudo
+```
+
+Compose it into scripts with `--json`:
+
+```bash
+# Every model that fits comfortably, best first
+peyk --json | jq -r '.models[] | select(.tier=="FITS") | "\(.overall)\t\(.model) \(.params_b)B \(.quant)"' | sort -rn
+
+# The single top recommendation
+peyk --json | jq -r '[.models[] | select(.tier!="NO_FIT")] | max_by(.overall) | .model_id'
+```
+
+Sample artifacts (generated on an Apple M3 / 16 GB laptop):
+[`report.json`](examples/report.json) ·
+[`report.md`](examples/report.md) ·
+[`report-deep.json`](examples/report-deep.json).
 
 ## Data sources
 

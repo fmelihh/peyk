@@ -18,7 +18,7 @@ Close the ranking/UX gaps below without becoming a model runner.
 
 ## Milestones (in build order)
 
-### M1 — CLI subcommands + GPU database (foundation)
+### ✅ M1 — CLI subcommands + GPU database (foundation)
 
 Refactor the flat argparse CLI into subcommands while keeping the bare `peyk`
 call (no subcommand) behaving as today (`recommend`).
@@ -30,7 +30,7 @@ call (no subcommand) behaving as today (`recommend`).
 - **Done when:** `peyk` unchanged; `peyk hardware` prints the profile; DB covers
   the common NVIDIA/Apple/AMD parts with a fuzzy name lookup + tests.
 
-### M2 — GPU simulation (`--gpu`) [P0-2]
+### ✅ M2 — GPU simulation (`--gpu`) [P0-2]
 
 Recommend for hypothetical hardware without touching the host.
 
@@ -41,7 +41,7 @@ Recommend for hypothetical hardware without touching the host.
 - **Done when:** simulated single/multi-GPU profiles produce correct tiers;
   unknown GPU name → clear error listing close matches.
 
-### M3 — Reverse lookup (`peyk plan`) [P0-3]
+### ✅ M3 — Reverse lookup (`peyk plan`) [P0-3]
 
 Invert the fit engine: given a model, what does it take to run it?
 
@@ -52,7 +52,7 @@ Invert the fit engine: given a model, what does it take to run it?
 - **Done when:** `plan` prints "needs ≥ X GB → RTX 4090 (24 GB) / A100 (80 GB)"
   with tiers; ambiguous names disambiguate.
 
-### M4 — `snippet` (report-only-safe) 
+### ✅ M4 — `snippet` (report-only-safe) 
 
 `peyk snippet "qwen2.5 7b"` prints ready-to-paste commands to run the chosen
 model — it never downloads anything.

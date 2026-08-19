@@ -30,8 +30,7 @@ CRITERION_LABEL = {
 }
 
 
-def _hardware_panel(rec: Recommendation) -> Panel:
-    hw = rec.hw
+def _hardware_panel(hw) -> Panel:
     accel = hw.accelerator.value + (f" ({hw.accelerator_name})" if hw.accelerator_name else "")
     cpu_desc = f" {hw.cpu_model}" if hw.cpu_model else ""
     lines = [
@@ -52,12 +51,18 @@ def _hardware_panel(rec: Recommendation) -> Panel:
         lines.append(f"[bold]VRAM:[/bold] {hw.vram_total_gb:.1f} GB{gpu_note}")
     if hw.unified_memory:
         lines.append("[bold]Memory:[/bold] unified (shared RAM/VRAM pool)")
-    bw_tag = "measured" if hw.mem_bandwidth_source == "measured" else "est."
+    bw_tag = {"measured": "measured", "simulated": "sim"}.get(hw.mem_bandwidth_source, "est.")
     lines.append(
         f"[bold]Usable memory pool (for sizing):[/bold] {hw.memory_pool_gb:.1f} GB  "
         f"| [bold]Bandwidth ({bw_tag}):[/bold] ~{hw.mem_bandwidth_gbs:.0f} GB/s"
     )
-    return Panel("\n".join(lines), title="Hardware Profile", border_style="cyan")
+    title = "Hardware Profile — SIMULATED" if hw.simulated else "Hardware Profile"
+    return Panel("\n".join(lines), title=title,
+                 border_style="magenta" if hw.simulated else "cyan")
+
+
+def render_hardware(hw, console: Console | None = None) -> None:
+    (console or Console()).print(_hardware_panel(hw))
 
 
 def _tier_table(rec: Recommendation) -> Table:
@@ -103,7 +108,7 @@ def _criterion_table(rec: Recommendation, criterion: str, n: int) -> Table:
 
 def render_terminal(rec: Recommendation, top: int = 5, console: Console | None = None) -> None:
     console = console or Console()
-    console.print(_hardware_panel(rec))
+    console.print(_hardware_panel(rec.hw))
     console.print()
     console.print(_tier_table(rec))
     console.print()
@@ -140,6 +145,66 @@ def to_json(rec: Recommendation) -> str:
                    sorted(rec.scored, key=lambda x: x.overall, reverse=True)],
     }
     return json.dumps(payload, indent=2, ensure_ascii=False)
+
+
+def _gpu_label(spec) -> str:
+    return f"{spec.name.upper()} ({spec.vram_gb:g} GB)" if spec else "—"
+
+
+def render_plan(result, console: Console | None = None) -> None:
+    console = console or Console()
+    v = result.variant
+    lines = [
+        f"[bold]Model:[/bold] {v.family} {v.params_b:g}B {v.quant}  "
+        f"(context {result.context})",
+        f"[bold]Memory needed:[/bold] {result.mem_need_gb:.1f} GB "
+        f"(weights + KV cache + overhead)",
+        "",
+        f"[bold]To fit comfortably:[/bold] ≥ {result.min_vram_fits_gb:.1f} GB VRAM",
+        f"[bold]To run (tight):[/bold] ≥ {result.min_vram_tight_gb:.1f} GB VRAM",
+        f"[bold]CPU / unified RAM needed:[/bold] ~{result.ram_needed_gb:.1f} GB",
+        "",
+        f"[bold]Cheapest GPU that fits:[/bold] {_gpu_label(result.cheapest_fits)}",
+        f"[bold]Cheapest GPU (tight):[/bold] {_gpu_label(result.cheapest_tight)}",
+    ]
+    if result.cheapest_fits is None and result.multi_gpu:
+        mg = result.multi_gpu
+        lines.append(
+            f"[bold]Multi-GPU option:[/bold] {mg.count}x {mg.spec.name.upper()} "
+            f"({mg.spec.vram_gb:g} GB each)"
+        )
+    console.print(Panel("\n".join(lines), title="peyk plan", border_style="cyan"))
+
+
+def plan_to_json(result) -> str:
+    r = result
+    payload = {
+        "model": r.variant.family, "model_id": r.variant.model_id,
+        "params_b": r.variant.params_b, "quant": r.variant.quant, "context": r.context,
+        "mem_need_gb": r.mem_need_gb,
+        "min_vram_fits_gb": r.min_vram_fits_gb, "min_vram_tight_gb": r.min_vram_tight_gb,
+        "ram_needed_gb": r.ram_needed_gb,
+        "cheapest_fits": r.cheapest_fits.name if r.cheapest_fits else None,
+        "cheapest_tight": r.cheapest_tight.name if r.cheapest_tight else None,
+        "multi_gpu": (f"{r.multi_gpu.count}x {r.multi_gpu.spec.name}"
+                      if r.multi_gpu else None),
+    }
+    return json.dumps(payload, indent=2, ensure_ascii=False)
+
+
+def render_snippet(data: dict, console: Console | None = None) -> None:
+    console = console or Console()
+    v = f"{data['model']} {data['params_b']:g}B {data['quant']}"
+    console.print(Panel(f"[bold]{v}[/bold]  ([dim]{data['model_id']}[/dim])",
+                        title="peyk snippet", border_style="cyan"))
+    for title, cmd in data["commands"].items():
+        console.print(f"[bold cyan]# {title}[/bold cyan]")
+        console.print(cmd)
+        console.print()
+
+
+def snippet_to_json(data: dict) -> str:
+    return json.dumps(data, indent=2, ensure_ascii=False)
 
 
 def to_markdown(rec: Recommendation, top: int = 5) -> str:

@@ -111,6 +111,28 @@ peyk --markdown report.md         # write a shareable Markdown report
 
 `--use-case` accepts `chat`, `coding`, `summarize`, or `embedding`.
 
+### Subcommands
+
+A bare `peyk` runs `recommend`. There are three more:
+
+```bash
+# Simulate hardware you don't have yet (before buying a GPU)
+peyk --gpu "RTX 4090"             # single card
+peyk --gpu "2x RTX 5090"          # multi-GPU (VRAM aggregated)
+peyk --gpu "A100 80GB" --gpu-only # full VRAM, no OS reserve
+
+# Reverse lookup: what does it take to run a given model?
+peyk plan "llama 3.3 70b"         # -> memory needed + cheapest GPU that fits
+peyk plan "qwen2.5 32b" --context 32768
+
+# Print ready-to-run commands for a model (no download)
+peyk snippet "qwen2.5 7b"         # -> ollama / python / llama.cpp commands
+
+# Show just the detected (or simulated) hardware
+peyk hardware --deep
+peyk hardware --gpu "2x A100 80GB"
+```
+
 ### Deep hardware probe (`--deep` / `--sudo`)
 
 By default `peyk` reads hardware with portable Python (psutil) plus vendor CLIs.

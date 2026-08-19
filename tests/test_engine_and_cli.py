@@ -58,3 +58,40 @@ def test_cli_markdown_writes_file(tmp_path):
     assert rc == 0
     assert out_file.exists()
     assert "peyk" in out_file.read_text(encoding="utf-8")
+
+
+def test_cli_hardware_json(capsys):
+    rc = main(["hardware", "--json"])
+    assert rc == 0
+    payload = json.loads(capsys.readouterr().out)
+    assert "accelerator" in payload
+    assert payload["ram_total_gb"] > 0
+
+
+def test_cli_gpu_simulation_recommend(capsys):
+    # Bare flags default to `recommend`; --gpu builds a simulated profile.
+    rc = main(["--offline", "--json", "--gpu", "RTX 4090"])
+    assert rc == 0
+    payload = json.loads(capsys.readouterr().out)
+    assert payload["hardware"]["simulated"] is True
+    assert payload["hardware"]["vram_total_gb"] == 24
+
+
+def test_cli_plan_json(capsys):
+    rc = main(["plan", "llama 3.3 70b", "--json"])
+    assert rc == 0
+    payload = json.loads(capsys.readouterr().out)
+    assert payload["params_b"] == 70
+    assert payload["cheapest_fits"] is not None
+
+
+def test_cli_snippet_json(capsys):
+    rc = main(["snippet", "qwen2.5 7b", "--json"])
+    assert rc == 0
+    payload = json.loads(capsys.readouterr().out)
+    assert "ollama" in payload["commands"]
+
+
+def test_cli_plan_no_match_returns_1(capsys):
+    rc = main(["plan", "nonexistent xyz model"])
+    assert rc == 1

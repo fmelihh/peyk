@@ -40,7 +40,9 @@ class HardwareProfile(BaseModel):
     vram_total_gb: float = 0.0  # aggregate across all GPUs of this accelerator
     unified_memory: bool = False
     mem_bandwidth_gbs: float = 0.0
-    mem_bandwidth_source: str = "estimated"  # "measured" once derived from DIMM specs
+    mem_bandwidth_source: str = "estimated"  # "measured"/"simulated" when applicable
+    vram_usable_fraction: float = VRAM_USABLE_FRACTION  # 1.0 under --gpu-only
+    simulated: bool = False
 
     @property
     def memory_pool_gb(self) -> float:
@@ -56,7 +58,7 @@ class HardwareProfile(BaseModel):
             usable = self.ram_total_gb * RAM_USABLE_FRACTION
             return round(max(usable, self.ram_available_gb), 1)
         if self.vram_total_gb > 0:
-            return round(self.vram_total_gb * VRAM_USABLE_FRACTION, 1)
+            return round(self.vram_total_gb * self.vram_usable_fraction, 1)
         usable = self.ram_total_gb * RAM_USABLE_FRACTION
         return round(max(usable, self.ram_available_gb), 1)
 

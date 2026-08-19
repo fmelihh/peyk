@@ -32,7 +32,8 @@ class HardwareProfile(BaseModel):
     ram_available_gb: float
     accelerator: Accelerator = Accelerator.NONE
     accelerator_name: Optional[str] = None
-    vram_total_gb: float = 0.0
+    gpu_count: int = 0
+    vram_total_gb: float = 0.0  # aggregate across all GPUs of this accelerator
     unified_memory: bool = False
     mem_bandwidth_gbs: float = 0.0
 

@@ -1,4 +1,4 @@
-# inference-profiler — Design
+# peyk — Design
 
 **Date:** 2026-08-19
 **Status:** Approved (autonomous execution granted by user)
@@ -17,7 +17,7 @@ produces a **report only** — it does not download, install, or run models.
 
 ## Architecture
 
-Six small, independently testable units under `src/inference_profiler/`:
+Six small, independently testable units under `src/peyk/`:
 
 1. **`profiler/`** — Hardware detection. Linux-first, degrades gracefully on
    macOS/Windows. Output: normalized `HardwareProfile`.
@@ -67,9 +67,10 @@ Report shows per-criterion top lists **and** a feasibility-tiered table
 
 ## CLI
 
-`inference-profiler` (alias `llm-fit`):
+`peyk`:
 `--use-case chat|coding|summarize|embedding`, `--languages tr,en`,
-`--context N`, `--top N`, `--offline`, `--json`, `--markdown FILE`.
+`--context N`, `--top N`, `--offline`, `--cross-check`, `--discover`,
+`--json`, `--markdown FILE`.
 
 ## Tech stack
 

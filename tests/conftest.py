@@ -1,6 +1,6 @@
 import pytest
 
-from inference_profiler.models import Accelerator, HardwareProfile, ModelVariant
+from peyk.models import Accelerator, HardwareProfile, ModelVariant
 
 
 @pytest.fixture

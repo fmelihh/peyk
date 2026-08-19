@@ -3,12 +3,27 @@ requires = ["setuptools>=68", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "inference-profiler"
+name = "peyk"
 version = "0.1.0"
-description = "Recommend optimal, current local LLM models for your hardware."
+description = "Right-size local LLMs to your hardware — recommend the best current models a machine can actually run."
 readme = "README.md"
 requires-python = ">=3.10"
 license = { text = "MIT" }
+authors = [{ name = "fmelihh" }]
+keywords = ["llm", "local-llm", "gguf", "ollama", "hardware", "inference", "recommender", "on-prem", "edge"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Environment :: Console",
+    "Intended Audience :: Developers",
+    "Intended Audience :: System Administrators",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: POSIX :: Linux",
+    "Operating System :: MacOS",
+    "Operating System :: Microsoft :: Windows",
+    "Programming Language :: Python :: 3 :: Only",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+    "Topic :: System :: Hardware",
+]
 dependencies = [
     "pydantic>=2.5",
     "psutil>=5.9",
@@ -16,20 +31,24 @@ dependencies = [
     "httpx>=0.27",
 ]
 
+[project.urls]
+Homepage = "https://github.com/fmelihh/peyk"
+Repository = "https://github.com/fmelihh/peyk"
+Issues = "https://github.com/fmelihh/peyk/issues"
+
 [project.optional-dependencies]
 hf = ["huggingface_hub>=0.24"]
 nvidia = ["pynvml>=11.5"]
 dev = ["pytest>=8.0", "pytest-mock>=3.12"]
 
 [project.scripts]
-inference-profiler = "inference_profiler.cli:main"
-llm-fit = "inference_profiler.cli:main"
+peyk = "peyk.cli:main"
 
 [tool.setuptools.packages.find]
 where = ["src"]
 
 [tool.setuptools.package-data]
-inference_profiler = ["sources/data/*.json"]
+peyk = ["sources/data/*.json", "py.typed"]
 
 [tool.pytest.ini_options]
 pythonpath = ["src"]

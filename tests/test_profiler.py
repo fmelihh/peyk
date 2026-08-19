@@ -1,7 +1,7 @@
-from inference_profiler.models import Accelerator
-from inference_profiler.profiler import accelerators, bandwidth, cpu, detect
-from inference_profiler.profiler.bandwidth import estimate_bandwidth
-from inference_profiler.models import HardwareProfile
+from peyk.models import Accelerator
+from peyk.profiler import accelerators, bandwidth, cpu, detect
+from peyk.profiler.bandwidth import estimate_bandwidth
+from peyk.models import HardwareProfile
 
 
 def test_detect_returns_profile():
@@ -68,6 +68,18 @@ def test_nvidia_parse(monkeypatch):
 def test_nvidia_absent(monkeypatch):
     monkeypatch.setattr(accelerators, "_run", lambda cmd, timeout=4: "")
     assert accelerators._nvidia() is None
+
+
+def test_nvidia_aggregates_multiple_gpus(monkeypatch):
+    monkeypatch.setattr(
+        accelerators, "_run",
+        lambda cmd, timeout=4: "NVIDIA A100, 40960\nNVIDIA A100, 40960\n",
+    )
+    info = accelerators._nvidia()
+    assert info is not None
+    assert info.count == 2
+    assert round(info.vram_gb) == 80  # summed across both GPUs
+    assert info.name.startswith("2x ")
 
 
 def test_cpu_flags_from_proc(monkeypatch, tmp_path):

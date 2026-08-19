@@ -19,7 +19,7 @@ class CuratedSource:
         if self._path:
             with open(self._path, "r") as fh:
                 return json.load(fh)
-        data = resources.files("inference_profiler.sources.data").joinpath("catalog.json")
+        data = resources.files("peyk.sources.data").joinpath("catalog.json")
         return json.loads(data.read_text(encoding="utf-8"))
 
     def fetch(self) -> List[ModelVariant]:

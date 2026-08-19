@@ -19,24 +19,26 @@ USE_CASES = ["chat", "coding", "summarize", "embedding"]
 
 def _parse_args(argv: Optional[List[str]] = None) -> argparse.Namespace:
     p = argparse.ArgumentParser(
-        prog="inference-profiler",
-        description="Donanımınıza en uygun güncel yerel LLM modellerini önerir.",
+        prog="peyk",
+        description="Recommend the best current local LLM models your hardware can run.",
     )
-    p.add_argument("--use-case", choices=USE_CASES, help="Kullanım amacı (skorlama ağırlıkları)")
+    p.add_argument("--use-case", choices=USE_CASES,
+                   help="Intended use case (adjusts scoring weights)")
     p.add_argument("--languages", default="en",
-                   help="Virgülle ayrılmış dil kodları, ör: tr,en")
+                   help="Comma-separated language codes, e.g. tr,en")
     p.add_argument("--context", type=int, default=8192,
-                   help="Hedeflenen bağlam uzunluğu (token)")
-    p.add_argument("--top", type=int, default=5, help="Kriter başına gösterilecek model sayısı")
+                   help="Target context length in tokens (default: 8192)")
+    p.add_argument("--top", type=int, default=5,
+                   help="Number of models to show per criterion (default: 5)")
     p.add_argument("--offline", action="store_true",
-                   help="Sadece yerleşik katalog; ağ sorgusu yok (varsayılan)")
+                   help="Use the bundled catalog only; no network calls (default)")
     p.add_argument("--cross-check", action="store_true",
-                   help="Ollama/HF'den canlı boyut doğrulaması yap (internet gerekir)")
+                   help="Verify sizes live via Ollama/HF (requires internet)")
     p.add_argument("--discover", action="store_true",
-                   help="HuggingFace'den trending GGUF modellerini keşfet (internet gerekir)")
-    p.add_argument("--json", action="store_true", help="JSON çıktısı ver")
-    p.add_argument("--markdown", metavar="FILE", help="Raporu Markdown dosyasına yaz")
-    p.add_argument("--version", action="version", version=f"inference-profiler {__version__}")
+                   help="Discover trending GGUF models from HuggingFace (requires internet)")
+    p.add_argument("--json", action="store_true", help="Emit machine-readable JSON")
+    p.add_argument("--markdown", metavar="FILE", help="Write the report to a Markdown file")
+    p.add_argument("--version", action="version", version=f"peyk {__version__}")
     return p.parse_args(argv)
 
 
@@ -48,7 +50,7 @@ def main(argv: Optional[List[str]] = None) -> int:
     wants_network = (args.cross_check or args.discover) and not args.offline
     offline = not wants_network
     if wants_network:
-        console.print("[dim]Canlı kaynaklardan veri alınıyor (bu biraz sürebilir)...[/dim]")
+        console.print("[dim]Fetching live data from sources (this may take a moment)...[/dim]")
     candidates = build_catalog(
         offline=offline, cross_check=args.cross_check, discover=args.discover
     )
@@ -56,7 +58,7 @@ def main(argv: Optional[List[str]] = None) -> int:
         discovered = sum(
             1 for c in candidates for v in c.variants if v.source == "hf-discovered"
         )
-        console.print(f"[dim]HuggingFace keşfi: {discovered} yeni varyant eklendi.[/dim]")
+        console.print(f"[dim]HuggingFace discovery: added {discovered} new variants.[/dim]")
 
     hw = detect()
     rec = recommend(
@@ -70,7 +72,7 @@ def main(argv: Optional[List[str]] = None) -> int:
     if args.markdown:
         with open(args.markdown, "w", encoding="utf-8") as fh:
             fh.write(to_markdown(rec, top=args.top))
-        console.print(f"[green]Markdown raporu yazıldı:[/green] {args.markdown}")
+        console.print(f"[green]Markdown report written to:[/green] {args.markdown}")
 
     if args.json:
         print(to_json(rec))

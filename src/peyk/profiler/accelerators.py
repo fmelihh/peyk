@@ -16,8 +16,9 @@ GB = 1024 ** 3
 class AccelInfo:
     kind: Accelerator = Accelerator.NONE
     name: str | None = None
-    vram_gb: float = 0.0
+    vram_gb: float = 0.0  # aggregate across all GPUs
     unified: bool = False
+    count: int = 0
 
 
 def _run(cmd: list[str], timeout: int = 4) -> str:
@@ -34,23 +35,26 @@ def _nvidia() -> AccelInfo | None:
     )
     if not out.strip():
         return None
-    # Take the first (or largest) GPU.
-    best_name, best_vram = None, 0.0
+    # Aggregate VRAM across all GPUs — multi-GPU servers can shard a model.
+    total_vram, count, first_name = 0.0, 0, None
     for line in out.strip().splitlines():
         parts = [p.strip() for p in line.split(",")]
         if len(parts) < 2:
             continue
-        name = parts[0]
         try:
             vram_mib = float(parts[1])
         except ValueError:
             continue
-        vram_gb = round(vram_mib / 1024, 1)
-        if vram_gb > best_vram:
-            best_name, best_vram = name, vram_gb
-    if best_name is None:
+        total_vram += vram_mib / 1024
+        count += 1
+        if first_name is None:
+            first_name = parts[0]
+    if count == 0:
         return None
-    return AccelInfo(Accelerator.NVIDIA, best_name, best_vram, unified=False)
+    name = first_name if count == 1 else f"{count}x {first_name}"
+    return AccelInfo(
+        Accelerator.NVIDIA, name, round(total_vram, 1), unified=False, count=count
+    )
 
 
 def _apple() -> AccelInfo | None:
@@ -62,7 +66,7 @@ def _apple() -> AccelInfo | None:
         name = out.strip()
     # Unified memory: VRAM pool == system RAM; report 0 here and let the
     # profile treat it as unified so memory_pool falls back to RAM.
-    return AccelInfo(Accelerator.APPLE, name, vram_gb=0.0, unified=True)
+    return AccelInfo(Accelerator.APPLE, name, vram_gb=0.0, unified=True, count=1)
 
 
 def _amd() -> AccelInfo | None:
@@ -78,7 +82,7 @@ def _amd() -> AccelInfo | None:
         if val > 1e8:  # looks like a byte count
             vram_gb = max(vram_gb, round(val / GB, 1))
     name = "AMD GPU"
-    return AccelInfo(Accelerator.AMD, name, vram_gb, unified=False)
+    return AccelInfo(Accelerator.AMD, name, vram_gb, unified=False, count=1)
 
 
 def detect_accelerator() -> AccelInfo:

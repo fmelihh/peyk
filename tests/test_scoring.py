@@ -1,5 +1,5 @@
-from inference_profiler import scoring
-from inference_profiler.models import FitTier, ModelVariant
+from peyk import scoring
+from peyk.models import FitTier, ModelVariant
 
 
 def test_language_score_multi_is_full(small_variant):

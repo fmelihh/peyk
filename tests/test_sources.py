@@ -1,12 +1,12 @@
 import httpx
 import pytest
 
-from inference_profiler.models import ModelVariant
-from inference_profiler.sources import build_catalog
-from inference_profiler.sources.curated import CuratedSource
-from inference_profiler.sources.huggingface import HuggingFaceSource
-from inference_profiler.sources.merge import merge_variants, to_candidates
-from inference_profiler.sources.ollama import OllamaSource
+from peyk.models import ModelVariant
+from peyk.sources import build_catalog
+from peyk.sources.curated import CuratedSource
+from peyk.sources.huggingface import HuggingFaceSource
+from peyk.sources.merge import merge_variants, to_candidates
+from peyk.sources.ollama import OllamaSource
 
 
 def test_curated_loads_variants():

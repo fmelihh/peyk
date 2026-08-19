@@ -15,52 +15,53 @@ from .models import FitTier, ScoredModel
 
 TIER_STYLE = {FitTier.FITS: "green", FitTier.TIGHT: "yellow", FitTier.NO_FIT: "red"}
 SOURCE_LABEL = {
-    "curated": "katalog",
+    "curated": "curated",
     "ollama": "ollama",
     "huggingface": "HF✓",
-    "hf-discovered": "HF keşif",
+    "hf-discovered": "HF discover",
 }
-TIER_LABEL = {FitTier.FITS: "RAHAT ÇALIŞIR", FitTier.TIGHT: "ZORLAR", FitTier.NO_FIT: "SIĞMAZ"}
+TIER_LABEL = {FitTier.FITS: "RUNS WELL", FitTier.TIGHT: "TIGHT", FitTier.NO_FIT: "WON'T FIT"}
 CRITERION_LABEL = {
-    "speed": "Hız",
-    "quality": "Kalite",
-    "language": "Dil desteği",
-    "context": "Bağlam",
-    "license": "Lisans",
+    "speed": "Speed",
+    "quality": "Quality",
+    "language": "Language",
+    "context": "Context",
+    "license": "License",
 }
 
 
 def _hardware_panel(rec: Recommendation) -> Panel:
     hw = rec.hw
+    accel = hw.accelerator.value + (f" ({hw.accelerator_name})" if hw.accelerator_name else "")
     lines = [
         f"[bold]OS/Arch:[/bold] {hw.os} / {hw.arch}",
-        f"[bold]CPU:[/bold] {hw.cpu_cores_physical} çekirdek "
-        f"({hw.cpu_cores_logical} thread)  flags: {', '.join(hw.cpu_flags) or '-'}",
-        f"[bold]RAM:[/bold] {hw.ram_available_gb:.1f} / {hw.ram_total_gb:.1f} GB uygun",
-        f"[bold]Hızlandırıcı:[/bold] {hw.accelerator.value}"
-        + (f" ({hw.accelerator_name})" if hw.accelerator_name else ""),
+        f"[bold]CPU:[/bold] {hw.cpu_cores_physical} cores "
+        f"({hw.cpu_cores_logical} threads)  flags: {', '.join(hw.cpu_flags) or '-'}",
+        f"[bold]RAM:[/bold] {hw.ram_available_gb:.1f} / {hw.ram_total_gb:.1f} GB free",
+        f"[bold]Accelerator:[/bold] {accel}",
     ]
     if hw.vram_total_gb:
-        lines.append(f"[bold]VRAM:[/bold] {hw.vram_total_gb:.1f} GB")
+        gpu_note = f" (across {hw.gpu_count} GPUs)" if hw.gpu_count > 1 else ""
+        lines.append(f"[bold]VRAM:[/bold] {hw.vram_total_gb:.1f} GB{gpu_note}")
     if hw.unified_memory:
-        lines.append("[bold]Bellek:[/bold] unified (RAM havuzu paylaşımlı)")
+        lines.append("[bold]Memory:[/bold] unified (shared RAM/VRAM pool)")
     lines.append(
-        f"[bold]Bellek havuzu (öneri için):[/bold] {hw.memory_pool_gb:.1f} GB  "
-        f"| [bold]Bant genişliği (tahmini):[/bold] ~{hw.mem_bandwidth_gbs:.0f} GB/s"
+        f"[bold]Usable memory pool (for sizing):[/bold] {hw.memory_pool_gb:.1f} GB  "
+        f"| [bold]Bandwidth (est.):[/bold] ~{hw.mem_bandwidth_gbs:.0f} GB/s"
     )
-    return Panel("\n".join(lines), title="Donanım Profili", border_style="cyan")
+    return Panel("\n".join(lines), title="Hardware Profile", border_style="cyan")
 
 
 def _tier_table(rec: Recommendation) -> Table:
-    table = Table(title="Uygunluk (en iyi çalışabilir quantization ile)")
-    table.add_column("Durum", no_wrap=True)
+    table = Table(title="Feasibility (using each model's best runnable quantization)")
+    table.add_column("Status", no_wrap=True)
     table.add_column("Model", style="bold", overflow="fold", min_width=12)
     table.add_column("Params", justify="right")
     table.add_column("Quant")
-    table.add_column("Bellek", justify="right")
-    table.add_column("Hız t/s", justify="right")
-    table.add_column("Genel", justify="right")
-    table.add_column("Kaynak", no_wrap=True)
+    table.add_column("Memory", justify="right")
+    table.add_column("Speed t/s", justify="right")
+    table.add_column("Score", justify="right")
+    table.add_column("Source", no_wrap=True)
 
     for tier in (FitTier.FITS, FitTier.TIGHT, FitTier.NO_FIT):
         for s in rec.by_tier(tier):
@@ -81,11 +82,11 @@ def _tier_table(rec: Recommendation) -> Table:
 
 
 def _criterion_table(rec: Recommendation, criterion: str, n: int) -> Table:
-    table = Table(title=f"En iyi: {CRITERION_LABEL.get(criterion, criterion)}")
+    table = Table(title=f"Top by {CRITERION_LABEL.get(criterion, criterion)}")
     table.add_column("#", justify="right")
     table.add_column("Model", style="bold")
     table.add_column("Params", justify="right")
-    table.add_column("Puan", justify="right")
+    table.add_column("Score", justify="right")
     for i, s in enumerate(rec.top_by(criterion, n=n), 1):
         table.add_row(str(i), s.variant.family, f"{s.variant.params_b:g}B",
                       f"{s.scores.get(criterion, 0):.0f}")
@@ -101,10 +102,10 @@ def render_terminal(rec: Recommendation, top: int = 5, console: Console | None =
     for criterion in CRITERIA:
         console.print(_criterion_table(rec, criterion, top))
     console.print(
-        "\n[dim]Not: bellek ve hız değerleri kaba tahmindir; gerçek sonuç "
-        "backend, quantization ve bağlam uzunluğuna göre değişir. "
-        "'HF keşif' modellerinde kalite puanı yalnızca parametre sayısından "
-        "kestirilmiştir (benchmark yok).[/dim]"
+        "\n[dim]Note: memory and speed figures are rough estimates; real results "
+        "depend on the backend, quantization, and context length. For 'HF discover' "
+        "models the quality score is estimated from parameter count only (no benchmark)."
+        "[/dim]"
     )
 
 
@@ -134,18 +135,18 @@ def to_json(rec: Recommendation) -> str:
 
 
 def to_markdown(rec: Recommendation, top: int = 5) -> str:
-    lines: List[str] = ["# LLM Model Önerisi", ""]
+    lines: List[str] = ["# peyk — LLM model recommendation", ""]
     hw = rec.hw
     lines += [
-        "## Donanım",
+        "## Hardware",
         f"- OS/Arch: {hw.os} / {hw.arch}",
         f"- RAM: {hw.ram_available_gb:.1f} / {hw.ram_total_gb:.1f} GB",
-        f"- Hızlandırıcı: {hw.accelerator.value} {hw.accelerator_name or ''}".rstrip(),
-        f"- Bellek havuzu: {hw.memory_pool_gb:.1f} GB (~{hw.mem_bandwidth_gbs:.0f} GB/s)",
+        f"- Accelerator: {hw.accelerator.value} {hw.accelerator_name or ''}".rstrip(),
+        f"- Usable memory pool: {hw.memory_pool_gb:.1f} GB (~{hw.mem_bandwidth_gbs:.0f} GB/s)",
         "",
-        "## Uygunluk",
+        "## Feasibility",
         "",
-        "| Durum | Model | Params | Quant | Bellek | Hız (tahmini) | Genel | Kaynak |",
+        "| Status | Model | Params | Quant | Memory | Speed (est.) | Score | Source |",
         "|---|---|---:|---|---:|---:|---:|---|",
     ]
     for tier in (FitTier.FITS, FitTier.TIGHT, FitTier.NO_FIT):
@@ -159,7 +160,7 @@ def to_markdown(rec: Recommendation, top: int = 5) -> str:
             )
     lines.append("")
     for criterion in CRITERIA:
-        lines.append(f"### En iyi: {CRITERION_LABEL.get(criterion, criterion)}")
+        lines.append(f"### Top by {CRITERION_LABEL.get(criterion, criterion)}")
         for i, s in enumerate(rec.top_by(criterion, n=top), 1):
             lines.append(f"{i}. {s.variant.family} {s.variant.params_b:g}B — "
                          f"{s.scores.get(criterion, 0):.0f}")

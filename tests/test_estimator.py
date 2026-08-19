@@ -1,5 +1,5 @@
-from inference_profiler import estimator
-from inference_profiler.models import FitTier, ModelVariant
+from peyk import estimator
+from peyk.models import FitTier, ModelVariant
 
 
 def test_kv_cache_grows_with_context(small_variant):

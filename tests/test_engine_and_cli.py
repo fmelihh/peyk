@@ -1,10 +1,10 @@
 import json
 
-from inference_profiler import report
-from inference_profiler.cli import main
-from inference_profiler.engine import recommend
-from inference_profiler.models import FitTier
-from inference_profiler.sources import build_catalog
+from peyk import report
+from peyk.cli import main
+from peyk.engine import recommend
+from peyk.models import FitTier
+from peyk.sources import build_catalog
 
 
 def test_recommend_ranks_and_tiers(rtx4090):
@@ -40,8 +40,8 @@ def test_markdown_contains_sections(laptop_cpu):
     cands = build_catalog(offline=True)
     rec = recommend(laptop_cpu, cands)
     md = report.to_markdown(rec)
-    assert "# LLM Model" in md
-    assert "Uygunluk" in md
+    assert "# peyk" in md
+    assert "Feasibility" in md
 
 
 def test_cli_json_smoke(capsys):
@@ -57,4 +57,4 @@ def test_cli_markdown_writes_file(tmp_path):
     rc = main(["--offline", "--markdown", str(out_file)])
     assert rc == 0
     assert out_file.exists()
-    assert "LLM Model" in out_file.read_text(encoding="utf-8")
+    assert "peyk" in out_file.read_text(encoding="utf-8")

@@ -36,6 +36,7 @@ def detect() -> HardwareProfile:
         ram_available_gb=ram_avail,
         accelerator=acc.kind,
         accelerator_name=acc.name,
+        gpu_count=acc.count,
         vram_total_gb=acc.vram_gb,
         unified_memory=acc.unified,
     )

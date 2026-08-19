@@ -1,7 +1,7 @@
 import httpx
 import pytest
 
-from inference_profiler.sources.hf_discovery import (
+from peyk.sources.hf_discovery import (
     HuggingFaceDiscoverySource,
     estimated_quality,
     parse_params_b,

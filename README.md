@@ -101,6 +101,9 @@ peyk --use-case coding            # weight the ranking toward a use case
 peyk --languages tr,en            # favor models that support these languages
 peyk --context 32768              # size for a target context length
 peyk --top 10                     # show more models per criterion
+peyk --speed fast                 # hide slow models (usable≥4, fast≥10 tok/s)
+peyk --vram-headroom 1.5GB        # keep memory free (safety margin)
+peyk --ram-budget 24GB            # cap the usable pool
 peyk --cross-check                # verify sizes live via Ollama + HuggingFace
 peyk --discover                   # pull in trending GGUF models from HuggingFace
 peyk --deep                       # native probe: RAM type/speed, exact chip

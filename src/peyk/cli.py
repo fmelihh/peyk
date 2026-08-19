@@ -21,6 +21,20 @@ from .sources import build_catalog
 
 USE_CASES = ["chat", "coding", "summarize", "embedding"]
 SUBCOMMANDS = {"recommend", "hardware", "plan", "snippet"}
+SPEED_FLOOR = {"usable": 4.0, "fast": 10.0}
+
+
+def _parse_size_gb(text: str | None) -> float | None:
+    """Parse '1.5GB' / '512MB' / '8' (GB default) into gigabytes."""
+    if not text:
+        return None
+    import re
+    m = re.match(r"^\s*(\d+(?:\.\d+)?)\s*(gb|g|mb|m)?\s*$", text, re.IGNORECASE)
+    if not m:
+        raise ValueError(f"Invalid size '{text}' (use e.g. 1.5GB or 512MB)")
+    val = float(m.group(1))
+    unit = (m.group(2) or "gb").lower()
+    return val / 1024 if unit in ("mb", "m") else val
 
 
 def _add_hardware_flags(p: argparse.ArgumentParser) -> None:
@@ -52,6 +66,12 @@ def _build_parser() -> argparse.ArgumentParser:
                      help="Verify sizes live via Ollama/HF (requires internet)")
     rec.add_argument("--discover", action="store_true",
                      help="Discover trending GGUF models from HuggingFace (requires internet)")
+    rec.add_argument("--speed", choices=["usable", "fast"],
+                     help="Hide models below a throughput floor (usable≥4, fast≥10 tok/s)")
+    rec.add_argument("--vram-headroom", metavar="SIZE",
+                     help="Extra memory to keep free, e.g. 1.5GB")
+    rec.add_argument("--ram-budget", metavar="SIZE",
+                     help="Cap the usable memory pool, e.g. 24GB")
     rec.add_argument("--json", action="store_true", help="Emit machine-readable JSON")
     rec.add_argument("--markdown", metavar="FILE", help="Write the report to a Markdown file")
     _add_hardware_flags(rec)
@@ -111,8 +131,17 @@ def _cmd_recommend(args, console: Console, status: Console) -> int:
         if discovered:
             status.print(f"[dim]HuggingFace discovery: added {discovered} new variants.[/dim]")
     hw = _resolve_hardware(args, status)
+    try:
+        reserve = _parse_size_gb(args.vram_headroom)
+        cap = _parse_size_gb(args.ram_budget)
+    except ValueError as exc:
+        status.print(f"[red]{exc}[/red]")
+        return 2
+    if reserve or cap is not None:
+        hw = hw.model_copy(update={"reserve_gb": reserve or 0.0, "pool_cap_gb": cap})
+    min_tps = SPEED_FLOOR.get(args.speed, 0.0)
     rec = recommend(hw=hw, candidates=candidates, context=args.context,
-                    languages=languages, use_case=args.use_case)
+                    languages=languages, use_case=args.use_case, min_tps=min_tps)
     if args.markdown:
         with open(args.markdown, "w", encoding="utf-8") as fh:
             fh.write(report.to_markdown(rec, top=args.top))

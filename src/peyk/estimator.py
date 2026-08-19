@@ -13,6 +13,7 @@ FITS_RATIO = 0.70  # mem_need <= 70% of pool  -> comfortable
 TIGHT_RATIO = 0.95  # mem_need <= 95% of pool  -> works but strained
 RUNTIME_OVERHEAD_GB = 0.9  # backend/context buffers outside weights + KV
 KV_PER_TOKEN_PARAM = 7e-5  # GB per (token * params_b) at fp16, MHA baseline
+CPU_OFFLOAD_BW_GBS = 50.0  # assumed system-RAM bandwidth for offloaded layers
 
 # Rough throughput multipliers relative to raw memory-bandwidth bound.
 BACKEND_MULTIPLIER = {
@@ -42,17 +43,45 @@ def memory_need_gb(variant: ModelVariant, context: int) -> float:
 
 
 def _bytes_per_token(variant: ModelVariant) -> float:
-    """Active bytes read per generated token ~= quantized weight size."""
-    return variant.file_size_gb  # dense models read ~all weights per token
+    """Active bytes read per generated token.
+
+    Dense models read ~all weights; MoE models read only their active experts,
+    so scale the on-disk size by active/total parameters.
+    """
+    if variant.active_params_b and variant.params_b > 0:
+        frac = min(1.0, variant.active_params_b / variant.params_b)
+        return variant.file_size_gb * frac
+    return variant.file_size_gb
 
 
-def estimate_tokens_per_sec(variant: ModelVariant, hw: HardwareProfile) -> float:
+def _effective_bandwidth(mem_need: float, hw: HardwareProfile) -> float:
+    """Blend GPU + system-RAM bandwidth when a model spills out of VRAM.
+
+    For a discrete accelerator whose weights don't all fit in VRAM, the
+    offloaded fraction is served at slower system-RAM bandwidth; time adds, so
+    the effective bandwidth is the harmonic blend.
+    """
+    gpu_bw = hw.mem_bandwidth_gbs
+    if hw.unified_memory or hw.accelerator == Accelerator.NONE or hw.vram_total_gb <= 0:
+        return gpu_bw
+    if mem_need <= hw.vram_total_gb:
+        return gpu_bw
+    frac_gpu = max(0.0, min(1.0, hw.vram_total_gb / mem_need))
+    frac_cpu = 1.0 - frac_gpu
+    denom = frac_gpu / max(gpu_bw, 1e-6) + frac_cpu / CPU_OFFLOAD_BW_GBS
+    return 1.0 / denom if denom > 0 else gpu_bw
+
+
+def estimate_tokens_per_sec(
+    variant: ModelVariant, hw: HardwareProfile, effective_bw: float | None = None
+) -> float:
     """Bandwidth-bound throughput estimate. Coarse by design."""
-    if hw.mem_bandwidth_gbs <= 0:
+    bw = hw.mem_bandwidth_gbs if effective_bw is None else effective_bw
+    if bw <= 0:
         return 0.0
     mult = BACKEND_MULTIPLIER.get(hw.accelerator, 0.35)
     per_token_gb = max(_bytes_per_token(variant), 1e-6)
-    return hw.mem_bandwidth_gbs / per_token_gb * mult
+    return bw / per_token_gb * mult
 
 
 def classify(mem_need: float, pool_gb: float) -> FitTier:
@@ -69,7 +98,7 @@ def estimate_fit(variant: ModelVariant, hw: HardwareProfile, context: int) -> Fi
     ctx = min(context, variant.context_max)
     mem_need = memory_need_gb(variant, ctx)
     tier = classify(mem_need, hw.memory_pool_gb)
-    tps = estimate_tokens_per_sec(variant, hw)
+    tps = estimate_tokens_per_sec(variant, hw, _effective_bandwidth(mem_need, hw))
     return FitResult(
         variant=variant,
         mem_need_gb=round(mem_need, 2),

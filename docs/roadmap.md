@@ -79,7 +79,7 @@ a confidence signal.
 - **Done when:** known models rank by benchmark not size; every quality score is
   tagged with its evidence level; guard unit-tested.
 
-### M6 — Speed & memory accuracy [P1]
+### ✅ M6 — Speed & memory accuracy [P1]
 
 - **MoE active params:** `ModelVariant.active_params_b`; speed uses active (not
   total) bytes/token (fixes Mixtral-class estimates).

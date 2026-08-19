@@ -30,7 +30,7 @@
 
     {"model_id": "mistral:7b", "family": "Mistral", "params_b": 7, "quant": "Q4_K_M", "file_size_gb": 4.4, "context_max": 32768, "languages": ["en","fr","de","es","it"], "license": "apache-2.0", "quality_score": 68},
     {"model_id": "mistral-small:24b", "family": "Mistral Small 3", "params_b": 24, "quant": "Q4_K_M", "file_size_gb": 14.3, "context_max": 32768, "languages": ["en","fr","de","es","it","pt","nl"], "license": "apache-2.0", "quality_score": 84},
-    {"model_id": "mixtral:8x7b", "family": "Mixtral", "params_b": 47, "quant": "Q4_K_M", "file_size_gb": 26.4, "context_max": 32768, "languages": ["en","fr","de","es","it"], "license": "apache-2.0", "quality_score": 82},
+    {"model_id": "mixtral:8x7b", "family": "Mixtral", "params_b": 47, "active_params_b": 13, "quant": "Q4_K_M", "file_size_gb": 26.4, "context_max": 32768, "languages": ["en","fr","de","es","it"], "license": "apache-2.0", "quality_score": 82},
 
     {"model_id": "deepseek-r1:7b", "family": "DeepSeek-R1-Distill", "params_b": 7, "quant": "Q4_K_M", "file_size_gb": 4.7, "context_max": 131072, "languages": ["multi"], "license": "mit", "quality_score": 74},
     {"model_id": "deepseek-r1:8b", "family": "DeepSeek-R1-Distill", "params_b": 8, "quant": "Q4_K_M", "file_size_gb": 4.9, "context_max": 131072, "languages": ["multi"], "license": "mit", "quality_score": 75},

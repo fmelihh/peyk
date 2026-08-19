@@ -43,6 +43,8 @@ class HardwareProfile(BaseModel):
     mem_bandwidth_source: str = "estimated"  # "measured"/"simulated" when applicable
     vram_usable_fraction: float = VRAM_USABLE_FRACTION  # 1.0 under --gpu-only
     simulated: bool = False
+    reserve_gb: float = 0.0            # extra headroom subtracted from the pool
+    pool_cap_gb: Optional[float] = None  # hard cap on the usable pool (budget)
 
     @property
     def memory_pool_gb(self) -> float:
@@ -52,15 +54,19 @@ class HardwareProfile(BaseModel):
         (total RAM / VRAM minus an OS/runtime reserve) rather than the transient
         free amount — while never claiming less than what is free right now.
         Apple unified memory and CPU-only machines draw from RAM; a discrete
-        accelerator draws from its own VRAM.
+        accelerator draws from its own VRAM. User budgets (`pool_cap_gb`,
+        `reserve_gb`) are applied last.
         """
         if self.unified_memory or self.accelerator == Accelerator.NONE:
-            usable = self.ram_total_gb * RAM_USABLE_FRACTION
-            return round(max(usable, self.ram_available_gb), 1)
-        if self.vram_total_gb > 0:
-            return round(self.vram_total_gb * self.vram_usable_fraction, 1)
-        usable = self.ram_total_gb * RAM_USABLE_FRACTION
-        return round(max(usable, self.ram_available_gb), 1)
+            base = max(self.ram_total_gb * RAM_USABLE_FRACTION, self.ram_available_gb)
+        elif self.vram_total_gb > 0:
+            base = self.vram_total_gb * self.vram_usable_fraction
+        else:
+            base = max(self.ram_total_gb * RAM_USABLE_FRACTION, self.ram_available_gb)
+
+        if self.pool_cap_gb is not None:
+            base = min(base, self.pool_cap_gb)
+        return round(max(0.0, base - self.reserve_gb), 1)
 
 
 class FitTier(str, Enum):
@@ -77,6 +83,7 @@ class ModelVariant(BaseModel):
     params_b: float
     quant: str = "Q4_K_M"
     file_size_gb: float
+    active_params_b: Optional[float] = None  # MoE: active (< total) params per token
     context_max: int = 8192
     languages: List[str] = Field(default_factory=lambda: ["en"])
     license: str = "unknown"

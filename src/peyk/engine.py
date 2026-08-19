@@ -37,12 +37,16 @@ def recommend(
     context: int = 8192,
     languages: Optional[List[str]] = None,
     use_case: Optional[str] = None,
+    min_tps: float = 0.0,
 ) -> Recommendation:
     languages = languages or ["en"]
     weights = weights_for(use_case)
     scored: List[ScoredModel] = []
     for cand in candidates:
         best = best_runnable_variant(cand.variants, hw, context, languages, weights)
-        if best is not None:
-            scored.append(best)
+        if best is None:
+            continue
+        if min_tps > 0 and best.fit.est_tokens_per_sec < min_tps:
+            continue  # --speed filter hides models below the throughput floor
+        scored.append(best)
     return Recommendation(hw=hw, scored=scored, context=context)

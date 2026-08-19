@@ -66,6 +66,8 @@ def _build_parser() -> argparse.ArgumentParser:
                      help="Verify sizes live via Ollama/HF (requires internet)")
     rec.add_argument("--discover", action="store_true",
                      help="Discover trending GGUF models from HuggingFace (requires internet)")
+    rec.add_argument("--no-cache", action="store_true",
+                     help="Bypass the ~/.cache/peyk TTL cache for live sources")
     rec.add_argument("--speed", choices=["usable", "fast"],
                      help="Hide models below a throughput floor (usable≥4, fast≥10 tok/s)")
     rec.add_argument("--vram-headroom", metavar="SIZE",
@@ -119,6 +121,7 @@ def _catalog_for(args, status: Console):
         offline=offline,
         cross_check=getattr(args, "cross_check", False),
         discover=getattr(args, "discover", False),
+        use_cache=not getattr(args, "no_cache", False),
     )
 
 

@@ -90,7 +90,7 @@ a confidence signal.
 - **Done when:** Mixtral speed is realistic; offload speed differs from
   all-in-VRAM; flags change tiers/lists as documented.
 
-### M7 — Caching [P1]
+### ✅ M7 — Caching [P1]
 
 - TTL cache under `~/.cache/peyk` (respect `$XDG_CACHE_HOME`): models/sizes
   ~6 h, benchmarks ~24 h. Cross-check/discover read cache first.

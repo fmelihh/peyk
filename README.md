@@ -231,6 +231,10 @@ back to the curated catalog and still produces a report.
 3. `estimator.py` computes per-variant memory need (weights + KV cache +
    overhead) and a rough tokens/sec estimate.
 4. `scoring.py` scores each model 0–100 on five criteria, weighted by use case.
+   Quality is **evidence-based**: a bundled benchmark snapshot
+   (`peyk/benchmarks/`) is matched `direct` → `interpolated` → `family` → `proxy`
+   and discounted by confidence, so unknown/repackaged models can't inherit a
+   score they haven't earned.
 5. `report.py` renders to terminal / JSON / Markdown.
 
 > **Note:** memory and speed figures are deliberately coarse heuristics; real

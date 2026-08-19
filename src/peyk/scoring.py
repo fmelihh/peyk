@@ -8,6 +8,7 @@ from __future__ import annotations
 
 from typing import Dict, List
 
+from . import benchmarks
 from .estimator import estimate_fit
 from .models import FitResult, FitTier, HardwareProfile, ModelVariant, ScoredModel
 
@@ -43,7 +44,8 @@ def speed_score(fit: FitResult) -> float:
 
 
 def quality_score(variant: ModelVariant) -> float:
-    return _clamp(variant.quality_score)
+    """Evidence-based quality: benchmark score discounted by confidence."""
+    return _clamp(benchmarks.evaluate(variant).effective)
 
 
 def language_score(variant: ModelVariant, wanted: List[str]) -> float:
@@ -84,15 +86,19 @@ def score_variant(
     weights: Dict[str, float],
 ) -> ScoredModel:
     fit = estimate_fit(variant, hw, context)
+    evidence = benchmarks.evaluate(variant)
     scores = {
         "speed": round(speed_score(fit), 1),
-        "quality": round(quality_score(variant), 1),
+        "quality": round(_clamp(evidence.effective), 1),
         "language": round(language_score(variant, languages), 1),
         "context": round(context_score(variant), 1),
         "license": round(license_score(variant), 1),
     }
     overall = round(sum(scores[k] * weights.get(k, 0) for k in scores), 1)
-    return ScoredModel(variant=variant, fit=fit, scores=scores, overall=overall)
+    return ScoredModel(
+        variant=variant, fit=fit, scores=scores, overall=overall,
+        quality_evidence=evidence.level, quality_source=evidence.source,
+    )
 
 
 def weights_for(use_case: str | None) -> Dict[str, float]:

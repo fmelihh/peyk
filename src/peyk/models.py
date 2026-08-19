@@ -117,3 +117,5 @@ class ScoredModel(BaseModel):
     fit: FitResult
     scores: dict  # criterion -> 0-100
     overall: float
+    quality_evidence: str = "proxy"  # direct | interpolated | family | proxy
+    quality_source: Optional[str] = None

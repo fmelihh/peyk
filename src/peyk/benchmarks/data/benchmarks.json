@@ -1,0 +1,43 @@
+{
+  "_comment": "Frozen-tier quality snapshot: an APPROXIMATE composite capability index (0-100) blending public leaderboards (Open LLM Leaderboard v2 + Chatbot Arena ELO style) as of 2026-08. Not exact benchmark numbers; a maintained snapshot used for evidence-based ranking. Live tiers (LiveBench / Artificial Analysis) are future work.",
+  "source": "openllm-lb-v2+arena (snapshot 2026-08, approx)",
+  "entries": [
+    {"family": "Llama 3.2", "params_b": 1, "quality": 40},
+    {"family": "Llama 3.2", "params_b": 3, "quality": 56},
+    {"family": "Llama 3.1", "params_b": 8, "quality": 70},
+    {"family": "Llama 3.3", "params_b": 70, "quality": 88, "elo": 1257},
+
+    {"family": "Qwen2.5", "params_b": 0.5, "quality": 30},
+    {"family": "Qwen2.5", "params_b": 3, "quality": 58},
+    {"family": "Qwen2.5", "params_b": 7, "quality": 73},
+    {"family": "Qwen2.5", "params_b": 14, "quality": 80},
+    {"family": "Qwen2.5", "params_b": 32, "quality": 86},
+    {"family": "Qwen2.5", "params_b": 72, "quality": 89, "elo": 1260},
+    {"family": "Qwen2.5-Coder", "params_b": 7, "quality": 72},
+    {"family": "Qwen2.5-Coder", "params_b": 32, "quality": 86},
+    {"family": "Qwen3", "params_b": 8, "quality": 77},
+    {"family": "Qwen3", "params_b": 32, "quality": 88},
+
+    {"family": "Gemma 2", "params_b": 2, "quality": 50},
+    {"family": "Gemma 2", "params_b": 9, "quality": 72},
+    {"family": "Gemma 2", "params_b": 27, "quality": 83, "elo": 1218},
+    {"family": "Gemma 3", "params_b": 4, "quality": 64},
+    {"family": "Gemma 3", "params_b": 12, "quality": 79},
+    {"family": "Gemma 3", "params_b": 27, "quality": 85},
+
+    {"family": "Phi-4", "params_b": 14, "quality": 81},
+    {"family": "Phi-3.5-mini", "params_b": 3.8, "quality": 62},
+
+    {"family": "Mistral", "params_b": 7, "quality": 66},
+    {"family": "Mistral Small 3", "params_b": 24, "quality": 83},
+    {"family": "Mixtral", "params_b": 47, "quality": 80},
+
+    {"family": "DeepSeek-R1-Distill", "params_b": 7, "quality": 74},
+    {"family": "DeepSeek-R1-Distill", "params_b": 8, "quality": 75},
+    {"family": "DeepSeek-R1-Distill", "params_b": 32, "quality": 87},
+    {"family": "DeepSeek-R1-Distill", "params_b": 70, "quality": 89},
+
+    {"family": "Aya Expanse", "params_b": 8, "quality": 68},
+    {"family": "Aya Expanse", "params_b": 32, "quality": 82}
+  ]
+}

@@ -62,7 +62,7 @@ model — it never downloads anything.
 - **Done when:** snippet reflects the recommended quant and model_id; `--json`
   variant available.
 
-### M5 — Evidence-based quality [P0-1] *(highest value, largest)*
+### ✅ M5 — Evidence-based quality [P0-1] *(highest value, largest)*
 
 Replace the hand-curated `quality_score` proxy with real benchmark evidence and
 a confidence signal.

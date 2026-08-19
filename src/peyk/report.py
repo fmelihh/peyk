@@ -94,15 +94,26 @@ def _tier_table(rec: Recommendation) -> Table:
     return table
 
 
+_EVIDENCE_STYLE = {"direct": "green", "interpolated": "yellow",
+                   "family": "yellow", "proxy": "dim"}
+
+
 def _criterion_table(rec: Recommendation, criterion: str, n: int) -> Table:
     table = Table(title=f"Top by {CRITERION_LABEL.get(criterion, criterion)}")
     table.add_column("#", justify="right")
     table.add_column("Model", style="bold")
     table.add_column("Params", justify="right")
     table.add_column("Score", justify="right")
+    show_conf = criterion == "quality"
+    if show_conf:
+        table.add_column("Evidence", no_wrap=True)
     for i, s in enumerate(rec.top_by(criterion, n=n), 1):
-        table.add_row(str(i), s.variant.family, f"{s.variant.params_b:g}B",
-                      f"{s.scores.get(criterion, 0):.0f}")
+        row = [str(i), s.variant.family, f"{s.variant.params_b:g}B",
+               f"{s.scores.get(criterion, 0):.0f}"]
+        if show_conf:
+            row.append(Text(s.quality_evidence,
+                            style=_EVIDENCE_STYLE.get(s.quality_evidence, "dim")))
+        table.add_row(*row)
     return table
 
 
@@ -116,9 +127,10 @@ def render_terminal(rec: Recommendation, top: int = 5, console: Console | None =
         console.print(_criterion_table(rec, criterion, top))
     console.print(
         "\n[dim]Note: memory and speed figures are rough estimates; real results "
-        "depend on the backend, quantization, and context length. For 'HF discover' "
-        "models the quality score is estimated from parameter count only (no benchmark)."
-        "[/dim]"
+        "depend on the backend, quantization, and context length. Quality is an "
+        "evidence-tagged benchmark score — 'direct' from the snapshot, 'proxy' "
+        "estimated from parameters (e.g. HF-discovered models), discounted by "
+        "confidence.[/dim]"
     )
 
 
@@ -133,6 +145,8 @@ def _scored_to_dict(s: ScoredModel) -> dict:
         "mem_need_gb": s.fit.mem_need_gb,
         "est_tokens_per_sec": s.fit.est_tokens_per_sec,
         "scores": s.scores,
+        "quality_evidence": s.quality_evidence,
+        "quality_source": s.quality_source,
         "overall": s.overall,
     }
 

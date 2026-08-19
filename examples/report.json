@@ -10,6 +10,7 @@
     ],
     "ram_total_gb": 16.0,
     "ram_available_gb": 6.5,
+    "disk_free_gb": 188.1,
     "ram_type": null,
     "ram_speed_mtps": null,
     "ram_channels": null,
@@ -19,10 +20,34 @@
     "vram_total_gb": 0.0,
     "unified_memory": true,
     "mem_bandwidth_gbs": 100.0,
-    "mem_bandwidth_source": "estimated"
+    "mem_bandwidth_source": "estimated",
+    "vram_usable_fraction": 0.9,
+    "simulated": false,
+    "reserve_gb": 0.0,
+    "pool_cap_gb": null
   },
   "context": 8192,
   "models": [
+    {
+      "model": "Llama 3.2",
+      "model_id": "llama3.2:1b",
+      "params_b": 1.0,
+      "quant": "Q4_K_M",
+      "source": "curated",
+      "tier": "FITS",
+      "mem_need_gb": 1.84,
+      "est_tokens_per_sec": 68.8,
+      "scores": {
+        "speed": 100.0,
+        "quality": 40.0,
+        "language": 100.0,
+        "context": 100.0,
+        "license": 100.0
+      },
+      "quality_evidence": "direct",
+      "quality_source": "openllm-lb-v2+arena (snapshot 2026-08, approx)",
+      "overall": 79.0
+    },
     {
       "model": "Nomic Embed",
       "model_id": "nomic-embed-text",
@@ -34,12 +59,14 @@
       "est_tokens_per_sec": 183.3,
       "scores": {
         "speed": 100.0,
-        "quality": 60.0,
+        "quality": 42.0,
         "language": 100.0,
         "context": 76.5,
         "license": 100.0
       },
-      "overall": 83.7
+      "quality_evidence": "proxy",
+      "quality_source": "catalog-proxy",
+      "overall": 77.4
     },
     {
       "model": "mxbai Embed",
@@ -52,30 +79,14 @@
       "est_tokens_per_sec": 78.6,
       "scores": {
         "speed": 100.0,
-        "quality": 62.0,
+        "quality": 43.4,
         "language": 100.0,
         "context": 58.8,
         "license": 100.0
       },
-      "overall": 82.6
-    },
-    {
-      "model": "Llama 3.2",
-      "model_id": "llama3.2:1b",
-      "params_b": 1.0,
-      "quant": "Q4_K_M",
-      "source": "curated",
-      "tier": "FITS",
-      "mem_need_gb": 1.84,
-      "est_tokens_per_sec": 68.8,
-      "scores": {
-        "speed": 100.0,
-        "quality": 42.0,
-        "language": 100.0,
-        "context": 100.0,
-        "license": 100.0
-      },
-      "overall": 79.7
+      "quality_evidence": "proxy",
+      "quality_source": "catalog-proxy",
+      "overall": 76.1
     },
     {
       "model": "Qwen2.5",
@@ -88,30 +99,14 @@
       "est_tokens_per_sec": 137.5,
       "scores": {
         "speed": 100.0,
-        "quality": 32.0,
+        "quality": 30.0,
         "language": 100.0,
         "context": 88.2,
         "license": 100.0
       },
-      "overall": 75.0
-    },
-    {
-      "model": "Llama 3.3",
-      "model_id": "llama3.3:70b",
-      "params_b": 70.0,
-      "quant": "Q4_K_M",
-      "source": "curated",
-      "tier": "NO_FIT",
-      "mem_need_gb": 53.94,
-      "est_tokens_per_sec": 1.3,
-      "scores": {
-        "speed": 2.2,
-        "quality": 90.0,
-        "language": 100.0,
-        "context": 100.0,
-        "license": 100.0
-      },
-      "overall": 72.0
+      "quality_evidence": "direct",
+      "quality_source": "openllm-lb-v2+arena (snapshot 2026-08, approx)",
+      "overall": 74.3
     },
     {
       "model": "DeepSeek-R1-Distill",
@@ -124,48 +119,14 @@
       "est_tokens_per_sec": 1.3,
       "scores": {
         "speed": 2.2,
-        "quality": 90.0,
+        "quality": 89.0,
         "language": 100.0,
         "context": 100.0,
         "license": 100.0
       },
-      "overall": 72.0
-    },
-    {
-      "model": "Llama 3.2",
-      "model_id": "llama3.2:3b",
-      "params_b": 3.0,
-      "quant": "Q4_K_M",
-      "source": "curated",
-      "tier": "FITS",
-      "mem_need_gb": 3.33,
-      "est_tokens_per_sec": 27.5,
-      "scores": {
-        "speed": 45.8,
-        "quality": 58.0,
-        "language": 100.0,
-        "context": 100.0,
-        "license": 100.0
-      },
-      "overall": 71.8
-    },
-    {
-      "model": "Phi-3.5-mini",
-      "model_id": "phi3.5:3.8b",
-      "params_b": 3.8,
-      "quant": "Q4_K_M",
-      "source": "curated",
-      "tier": "FITS",
-      "mem_need_gb": 3.84,
-      "est_tokens_per_sec": 22.9,
-      "scores": {
-        "speed": 38.2,
-        "quality": 63.0,
-        "language": 100.0,
-        "context": 100.0,
-        "license": 100.0
-      },
-      "overall": 71.6
+      "quality_evidence": "direct",
+      "quality_source": "openllm-lb-v2+arena (snapshot 2026-08, approx)",
+      "overall": 71.7
     },
     {
       "model": "DeepSeek-R1-Distill",
@@ -183,25 +144,49 @@
         "context": 100.0,
         "license": 100.0
       },
+      "quality_evidence": "direct",
+      "quality_source": "openllm-lb-v2+arena (snapshot 2026-08, approx)",
       "overall": 71.6
     },
     {
-      "model": "Qwen2.5",
-      "model_id": "qwen2.5:3b",
-      "params_b": 3.0,
+      "model": "Llama 3.3",
+      "model_id": "llama3.3:70b",
+      "params_b": 70.0,
+      "quant": "Q4_K_M",
+      "source": "curated",
+      "tier": "NO_FIT",
+      "mem_need_gb": 53.94,
+      "est_tokens_per_sec": 1.3,
+      "scores": {
+        "speed": 2.2,
+        "quality": 88.0,
+        "language": 100.0,
+        "context": 100.0,
+        "license": 100.0
+      },
+      "quality_evidence": "direct",
+      "quality_source": "openllm-lb-v2+arena (snapshot 2026-08, approx)",
+      "overall": 71.3
+    },
+    {
+      "model": "Phi-3.5-mini",
+      "model_id": "phi3.5:3.8b",
+      "params_b": 3.8,
       "quant": "Q4_K_M",
       "source": "curated",
       "tier": "FITS",
-      "mem_need_gb": 3.33,
-      "est_tokens_per_sec": 27.5,
+      "mem_need_gb": 3.84,
+      "est_tokens_per_sec": 22.9,
       "scores": {
-        "speed": 45.8,
-        "quality": 60.0,
+        "speed": 38.2,
+        "quality": 62.0,
         "language": 100.0,
-        "context": 88.2,
+        "context": 100.0,
         "license": 100.0
       },
-      "overall": 71.3
+      "quality_evidence": "direct",
+      "quality_source": "openllm-lb-v2+arena (snapshot 2026-08, approx)",
+      "overall": 71.2
     },
     {
       "model": "Gemma 3",
@@ -219,7 +204,29 @@
         "context": 100.0,
         "license": 100.0
       },
+      "quality_evidence": "direct",
+      "quality_source": "openllm-lb-v2+arena (snapshot 2026-08, approx)",
       "overall": 71.1
+    },
+    {
+      "model": "Llama 3.2",
+      "model_id": "llama3.2:3b",
+      "params_b": 3.0,
+      "quant": "Q4_K_M",
+      "source": "curated",
+      "tier": "FITS",
+      "mem_need_gb": 3.33,
+      "est_tokens_per_sec": 27.5,
+      "scores": {
+        "speed": 45.8,
+        "quality": 56.0,
+        "language": 100.0,
+        "context": 100.0,
+        "license": 100.0
+      },
+      "quality_evidence": "direct",
+      "quality_source": "openllm-lb-v2+arena (snapshot 2026-08, approx)",
+      "overall": 71.0
     },
     {
       "model": "Qwen3",
@@ -237,6 +244,8 @@
         "context": 90.1,
         "license": 100.0
       },
+      "quality_evidence": "direct",
+      "quality_source": "openllm-lb-v2+arena (snapshot 2026-08, approx)",
       "overall": 71.0
     },
     {
@@ -255,25 +264,9 @@
         "context": 100.0,
         "license": 100.0
       },
+      "quality_evidence": "direct",
+      "quality_source": "openllm-lb-v2+arena (snapshot 2026-08, approx)",
       "overall": 70.9
-    },
-    {
-      "model": "Gemma 3",
-      "model_id": "gemma3:12b",
-      "params_b": 12.0,
-      "quant": "Q4_K_M",
-      "source": "curated",
-      "tier": "TIGHT",
-      "mem_need_gb": 10.72,
-      "est_tokens_per_sec": 6.8,
-      "scores": {
-        "speed": 11.3,
-        "quality": 80.0,
-        "language": 100.0,
-        "context": 100.0,
-        "license": 100.0
-      },
-      "overall": 70.8
     },
     {
       "model": "DeepSeek-R1-Distill",
@@ -291,43 +284,69 @@
         "context": 100.0,
         "license": 100.0
       },
+      "quality_evidence": "direct",
+      "quality_source": "openllm-lb-v2+arena (snapshot 2026-08, approx)",
       "overall": 70.8
     },
     {
-      "model": "Qwen2.5-Coder",
-      "model_id": "qwen2.5-coder:32b",
-      "params_b": 32.0,
+      "model": "Qwen2.5",
+      "model_id": "qwen2.5:3b",
+      "params_b": 3.0,
       "quant": "Q4_K_M",
       "source": "curated",
-      "tier": "NO_FIT",
-      "mem_need_gb": 25.49,
-      "est_tokens_per_sec": 2.8,
+      "tier": "FITS",
+      "mem_need_gb": 3.33,
+      "est_tokens_per_sec": 27.5,
       "scores": {
-        "speed": 4.7,
-        "quality": 87.0,
+        "speed": 45.8,
+        "quality": 58.0,
         "language": 100.0,
         "context": 88.2,
         "license": 100.0
       },
-      "overall": 70.4
+      "quality_evidence": "direct",
+      "quality_source": "openllm-lb-v2+arena (snapshot 2026-08, approx)",
+      "overall": 70.6
     },
     {
-      "model": "Gemma 2",
-      "model_id": "gemma2:2b",
-      "params_b": 2.0,
+      "model": "Gemma 3",
+      "model_id": "gemma3:12b",
+      "params_b": 12.0,
       "quant": "Q4_K_M",
       "source": "curated",
-      "tier": "FITS",
-      "mem_need_gb": 2.79,
-      "est_tokens_per_sec": 34.4,
+      "tier": "TIGHT",
+      "mem_need_gb": 10.72,
+      "est_tokens_per_sec": 6.8,
       "scores": {
-        "speed": 57.3,
-        "quality": 52.0,
+        "speed": 11.3,
+        "quality": 79.0,
         "language": 100.0,
-        "context": 76.5,
+        "context": 100.0,
         "license": 100.0
       },
-      "overall": 70.2
+      "quality_evidence": "direct",
+      "quality_source": "openllm-lb-v2+arena (snapshot 2026-08, approx)",
+      "overall": 70.5
+    },
+    {
+      "model": "Llama 3.2 Vision",
+      "model_id": "llama3.2-vision:90b",
+      "params_b": 90.0,
+      "quant": "Q4_K_M",
+      "source": "curated",
+      "tier": "NO_FIT",
+      "mem_need_gb": 68.8,
+      "est_tokens_per_sec": 1.0,
+      "scores": {
+        "speed": 1.7,
+        "quality": 86.0,
+        "language": 100.0,
+        "context": 100.0,
+        "license": 100.0
+      },
+      "quality_evidence": "direct",
+      "quality_source": "openllm-lb-v2+arena (snapshot 2026-08, approx)",
+      "overall": 70.5
     },
     {
       "model": "Qwen3",
@@ -340,48 +359,14 @@
       "est_tokens_per_sec": 10.6,
       "scores": {
         "speed": 17.7,
-        "quality": 76.0,
+        "quality": 77.0,
         "language": 100.0,
         "context": 90.1,
         "license": 100.0
       },
-      "overall": 70.0
-    },
-    {
-      "model": "Gemma 3",
-      "model_id": "gemma3:4b",
-      "params_b": 4.0,
-      "quant": "Q4_K_M",
-      "source": "curated",
-      "tier": "FITS",
-      "mem_need_gb": 4.77,
-      "est_tokens_per_sec": 16.7,
-      "scores": {
-        "speed": 27.8,
-        "quality": 66.0,
-        "language": 100.0,
-        "context": 100.0,
-        "license": 100.0
-      },
-      "overall": 70.0
-    },
-    {
-      "model": "Mistral Small 3",
-      "model_id": "mistral-small:24b",
-      "params_b": 24.0,
-      "quant": "Q4_K_M",
-      "source": "curated",
-      "tier": "NO_FIT",
-      "mem_need_gb": 18.64,
-      "est_tokens_per_sec": 3.8,
-      "scores": {
-        "speed": 6.3,
-        "quality": 84.0,
-        "language": 100.0,
-        "context": 88.2,
-        "license": 100.0
-      },
-      "overall": 69.8
+      "quality_evidence": "direct",
+      "quality_source": "openllm-lb-v2+arena (snapshot 2026-08, approx)",
+      "overall": 70.4
     },
     {
       "model": "Qwen2.5",
@@ -394,47 +379,73 @@
       "est_tokens_per_sec": 2.8,
       "scores": {
         "speed": 4.7,
-        "quality": 85.0,
+        "quality": 86.0,
         "language": 100.0,
         "context": 88.2,
         "license": 100.0
       },
-      "overall": 69.7
+      "quality_evidence": "direct",
+      "quality_source": "openllm-lb-v2+arena (snapshot 2026-08, approx)",
+      "overall": 70.1
     },
     {
       "model": "Qwen2.5-Coder",
-      "model_id": "qwen2.5-coder:7b",
-      "params_b": 7.0,
+      "model_id": "qwen2.5-coder:32b",
+      "params_b": 32.0,
       "quant": "Q4_K_M",
       "source": "curated",
-      "tier": "FITS",
-      "mem_need_gb": 6.6,
-      "est_tokens_per_sec": 11.7,
+      "tier": "NO_FIT",
+      "mem_need_gb": 25.49,
+      "est_tokens_per_sec": 2.8,
       "scores": {
-        "speed": 19.5,
-        "quality": 74.0,
+        "speed": 4.7,
+        "quality": 86.0,
         "language": 100.0,
         "context": 88.2,
         "license": 100.0
       },
-      "overall": 69.6
+      "quality_evidence": "direct",
+      "quality_source": "openllm-lb-v2+arena (snapshot 2026-08, approx)",
+      "overall": 70.1
     },
     {
-      "model": "Llama 3.1",
-      "model_id": "llama3.1:8b",
-      "params_b": 8.0,
+      "model": "Mixtral",
+      "model_id": "mixtral:8x7b",
+      "params_b": 47.0,
+      "quant": "Q4_K_M",
+      "source": "curated",
+      "tier": "NO_FIT",
+      "mem_need_gb": 34.04,
+      "est_tokens_per_sec": 7.5,
+      "scores": {
+        "speed": 12.5,
+        "quality": 80.0,
+        "language": 100.0,
+        "context": 88.2,
+        "license": 100.0
+      },
+      "quality_evidence": "direct",
+      "quality_source": "openllm-lb-v2+arena (snapshot 2026-08, approx)",
+      "overall": 69.9
+    },
+    {
+      "model": "Gemma 2",
+      "model_id": "gemma2:2b",
+      "params_b": 2.0,
       "quant": "Q4_K_M",
       "source": "curated",
       "tier": "FITS",
-      "mem_need_gb": 6.95,
-      "est_tokens_per_sec": 11.2,
+      "mem_need_gb": 2.79,
+      "est_tokens_per_sec": 34.4,
       "scores": {
-        "speed": 18.7,
-        "quality": 71.0,
+        "speed": 57.3,
+        "quality": 50.0,
         "language": 100.0,
-        "context": 100.0,
+        "context": 76.5,
         "license": 100.0
       },
+      "quality_evidence": "direct",
+      "quality_source": "openllm-lb-v2+arena (snapshot 2026-08, approx)",
       "overall": 69.5
     },
     {
@@ -448,16 +459,118 @@
       "est_tokens_per_sec": 6.1,
       "scores": {
         "speed": 10.2,
-        "quality": 79.0,
+        "quality": 80.0,
         "language": 100.0,
         "context": 88.2,
         "license": 100.0
       },
-      "overall": 69.0
+      "quality_evidence": "direct",
+      "quality_source": "openllm-lb-v2+arena (snapshot 2026-08, approx)",
+      "overall": 69.4
+    },
+    {
+      "model": "Mistral Small 3",
+      "model_id": "mistral-small:24b",
+      "params_b": 24.0,
+      "quant": "Q4_K_M",
+      "source": "curated",
+      "tier": "NO_FIT",
+      "mem_need_gb": 18.64,
+      "est_tokens_per_sec": 3.8,
+      "scores": {
+        "speed": 6.3,
+        "quality": 83.0,
+        "language": 100.0,
+        "context": 88.2,
+        "license": 100.0
+      },
+      "quality_evidence": "direct",
+      "quality_source": "openllm-lb-v2+arena (snapshot 2026-08, approx)",
+      "overall": 69.4
+    },
+    {
+      "model": "Gemma 3",
+      "model_id": "gemma3:4b",
+      "params_b": 4.0,
+      "quant": "Q4_K_M",
+      "source": "curated",
+      "tier": "FITS",
+      "mem_need_gb": 4.77,
+      "est_tokens_per_sec": 16.7,
+      "scores": {
+        "speed": 27.8,
+        "quality": 64.0,
+        "language": 100.0,
+        "context": 100.0,
+        "license": 100.0
+      },
+      "quality_evidence": "direct",
+      "quality_source": "openllm-lb-v2+arena (snapshot 2026-08, approx)",
+      "overall": 69.3
+    },
+    {
+      "model": "Llama 3.1",
+      "model_id": "llama3.1:8b",
+      "params_b": 8.0,
+      "quant": "Q4_K_M",
+      "source": "curated",
+      "tier": "FITS",
+      "mem_need_gb": 6.95,
+      "est_tokens_per_sec": 11.2,
+      "scores": {
+        "speed": 18.7,
+        "quality": 70.0,
+        "language": 100.0,
+        "context": 100.0,
+        "license": 100.0
+      },
+      "quality_evidence": "direct",
+      "quality_source": "openllm-lb-v2+arena (snapshot 2026-08, approx)",
+      "overall": 69.2
     },
     {
       "model": "Qwen2.5",
       "model_id": "qwen2.5:7b",
+      "params_b": 7.0,
+      "quant": "Q4_K_M",
+      "source": "curated",
+      "tier": "FITS",
+      "mem_need_gb": 6.6,
+      "est_tokens_per_sec": 11.7,
+      "scores": {
+        "speed": 19.5,
+        "quality": 73.0,
+        "language": 100.0,
+        "context": 88.2,
+        "license": 100.0
+      },
+      "quality_evidence": "direct",
+      "quality_source": "openllm-lb-v2+arena (snapshot 2026-08, approx)",
+      "overall": 69.2
+    },
+    {
+      "model": "Phi-4",
+      "model_id": "phi4:14b",
+      "params_b": 14.0,
+      "quant": "Q4_K_M",
+      "source": "curated",
+      "tier": "TIGHT",
+      "mem_need_gb": 12.01,
+      "est_tokens_per_sec": 6.0,
+      "scores": {
+        "speed": 10.0,
+        "quality": 81.0,
+        "language": 100.0,
+        "context": 82.4,
+        "license": 100.0
+      },
+      "quality_evidence": "direct",
+      "quality_source": "openllm-lb-v2+arena (snapshot 2026-08, approx)",
+      "overall": 69.1
+    },
+    {
+      "model": "Qwen2.5-Coder",
+      "model_id": "qwen2.5-coder:7b",
       "params_b": 7.0,
       "quant": "Q4_K_M",
       "source": "curated",
@@ -471,43 +584,29 @@
         "context": 88.2,
         "license": 100.0
       },
+      "quality_evidence": "direct",
+      "quality_source": "openllm-lb-v2+arena (snapshot 2026-08, approx)",
       "overall": 68.9
     },
     {
-      "model": "Phi-4",
-      "model_id": "phi4:14b",
-      "params_b": 14.0,
+      "model": "Qwen2.5-VL",
+      "model_id": "qwen2.5vl:7b",
+      "params_b": 7.0,
       "quant": "Q4_K_M",
       "source": "curated",
-      "tier": "TIGHT",
-      "mem_need_gb": 12.01,
-      "est_tokens_per_sec": 6.0,
+      "tier": "FITS",
+      "mem_need_gb": 6.9,
+      "est_tokens_per_sec": 11.0,
       "scores": {
-        "speed": 10.0,
-        "quality": 80.0,
-        "language": 100.0,
-        "context": 82.4,
-        "license": 100.0
-      },
-      "overall": 68.7
-    },
-    {
-      "model": "Mixtral",
-      "model_id": "mixtral:8x7b",
-      "params_b": 47.0,
-      "quant": "Q4_K_M",
-      "source": "curated",
-      "tier": "NO_FIT",
-      "mem_need_gb": 34.04,
-      "est_tokens_per_sec": 2.1,
-      "scores": {
-        "speed": 3.5,
-        "quality": 82.0,
+        "speed": 18.3,
+        "quality": 73.0,
         "language": 100.0,
         "context": 88.2,
         "license": 100.0
       },
-      "overall": 68.4
+      "quality_evidence": "direct",
+      "quality_source": "openllm-lb-v2+arena (snapshot 2026-08, approx)",
+      "overall": 68.9
     },
     {
       "model": "Gemma 2",
@@ -525,24 +624,28 @@
         "context": 76.5,
         "license": 100.0
       },
+      "quality_evidence": "direct",
+      "quality_source": "openllm-lb-v2+arena (snapshot 2026-08, approx)",
       "overall": 68.1
     },
     {
-      "model": "Mistral",
-      "model_id": "mistral:7b",
-      "params_b": 7.0,
+      "model": "Llama 3.2 Vision",
+      "model_id": "llama3.2-vision:11b",
+      "params_b": 11.0,
       "quant": "Q4_K_M",
       "source": "curated",
-      "tier": "FITS",
-      "mem_need_gb": 6.3,
-      "est_tokens_per_sec": 12.5,
+      "tier": "TIGHT",
+      "mem_need_gb": 10.38,
+      "est_tokens_per_sec": 7.0,
       "scores": {
-        "speed": 20.8,
-        "quality": 68.0,
+        "speed": 11.7,
+        "quality": 71.0,
         "language": 100.0,
-        "context": 88.2,
+        "context": 100.0,
         "license": 100.0
       },
+      "quality_evidence": "direct",
+      "quality_source": "openllm-lb-v2+arena (snapshot 2026-08, approx)",
       "overall": 67.8
     },
     {
@@ -561,7 +664,49 @@
         "context": 88.2,
         "license": 70.0
       },
+      "quality_evidence": "direct",
+      "quality_source": "openllm-lb-v2+arena (snapshot 2026-08, approx)",
       "overall": 67.5
+    },
+    {
+      "model": "Qwen2.5-VL",
+      "model_id": "qwen2.5vl:72b",
+      "params_b": 72.0,
+      "quant": "Q4_K_M",
+      "source": "curated",
+      "tier": "NO_FIT",
+      "mem_need_gb": 58.22,
+      "est_tokens_per_sec": 1.2,
+      "scores": {
+        "speed": 2.0,
+        "quality": 88.0,
+        "language": 100.0,
+        "context": 88.2,
+        "license": 70.0
+      },
+      "quality_evidence": "direct",
+      "quality_source": "openllm-lb-v2+arena (snapshot 2026-08, approx)",
+      "overall": 67.1
+    },
+    {
+      "model": "Mistral",
+      "model_id": "mistral:7b",
+      "params_b": 7.0,
+      "quant": "Q4_K_M",
+      "source": "curated",
+      "tier": "FITS",
+      "mem_need_gb": 6.3,
+      "est_tokens_per_sec": 12.5,
+      "scores": {
+        "speed": 20.8,
+        "quality": 66.0,
+        "language": 100.0,
+        "context": 88.2,
+        "license": 100.0
+      },
+      "quality_evidence": "direct",
+      "quality_source": "openllm-lb-v2+arena (snapshot 2026-08, approx)",
+      "overall": 67.1
     },
     {
       "model": "Gemma 2",
@@ -574,12 +719,14 @@
       "est_tokens_per_sec": 9.5,
       "scores": {
         "speed": 15.8,
-        "quality": 73.0,
+        "quality": 72.0,
         "language": 100.0,
         "context": 76.5,
         "license": 100.0
       },
-      "overall": 67.2
+      "quality_evidence": "direct",
+      "quality_source": "openllm-lb-v2+arena (snapshot 2026-08, approx)",
+      "overall": 66.8
     },
     {
       "model": "Aya Expanse",
@@ -592,12 +739,14 @@
       "est_tokens_per_sec": 2.8,
       "scores": {
         "speed": 4.7,
-        "quality": 84.0,
+        "quality": 82.0,
         "language": 100.0,
         "context": 100.0,
         "license": 30.0
       },
-      "overall": 63.6
+      "quality_evidence": "direct",
+      "quality_source": "openllm-lb-v2+arena (snapshot 2026-08, approx)",
+      "overall": 62.9
     },
     {
       "model": "Aya Expanse",
@@ -610,12 +759,14 @@
       "est_tokens_per_sec": 10.8,
       "scores": {
         "speed": 18.0,
-        "quality": 70.0,
+        "quality": 68.0,
         "language": 100.0,
         "context": 76.5,
         "license": 30.0
       },
-      "overall": 59.6
+      "quality_evidence": "direct",
+      "quality_source": "openllm-lb-v2+arena (snapshot 2026-08, approx)",
+      "overall": 58.9
     }
   ]
 }

@@ -1,0 +1,36 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "inference-profiler"
+version = "0.1.0"
+description = "Recommend optimal, current local LLM models for your hardware."
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+dependencies = [
+    "pydantic>=2.5",
+    "psutil>=5.9",
+    "rich>=13.0",
+    "httpx>=0.27",
+]
+
+[project.optional-dependencies]
+hf = ["huggingface_hub>=0.24"]
+nvidia = ["pynvml>=11.5"]
+dev = ["pytest>=8.0", "pytest-mock>=3.12"]
+
+[project.scripts]
+inference-profiler = "inference_profiler.cli:main"
+llm-fit = "inference_profiler.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+inference_profiler = ["sources/data/*.json"]
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+testpaths = ["tests"]

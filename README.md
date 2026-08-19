@@ -6,6 +6,13 @@
   <b>Right-size local LLMs to your hardware.</b>
 </p>
 
+<p align="center">
+  <a href="https://github.com/fmelihh/peyk/actions/workflows/ci.yml"><img src="https://github.com/fmelihh/peyk/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
+  <a href="https://pypi.org/project/peyk/"><img src="https://img.shields.io/pypi/v/peyk" alt="PyPI"></a>
+  <img src="https://img.shields.io/pypi/pyversions/peyk" alt="Python versions">
+  <img src="https://img.shields.io/badge/license-MIT-blue" alt="License">
+</p>
+
 `peyk` inspects the machine it runs on and tells you which *current,
 locally-runnable* LLM models that machine can actually run — ranked across
 speed, quality, language support, context length, and license. It produces a
@@ -39,6 +46,16 @@ and trial-and-error downloads. `peyk` turns that into one command.
 
 `peyk` needs **Python 3.10+**. It runs on Linux (primary target), macOS, and
 Windows.
+
+### Quickstart
+
+```bash
+uvx peyk                     # run without installing (one-off)
+uv tool install peyk         # persistent install
+pip install peyk             # classic pip
+```
+
+Then just run `peyk`. For hacking on the source, install from a clone instead:
 
 ### Linux (recommended)
 

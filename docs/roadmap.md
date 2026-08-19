@@ -96,11 +96,14 @@ a confidence signal.
   ~6 h, benchmarks ~24 h. Cross-check/discover read cache first.
 - **Done when:** a second online run within TTL makes no network calls.
 
-### M8 — Distribution [P1]
+### ✅ M8 — Distribution [P1]
 
 - Publish to **PyPI** (`pip install peyk`, `uvx peyk`, `uv tool install peyk`).
 - Add a GitHub Actions CI (pytest matrix) + a release workflow.
-- **Done when:** `uvx peyk` runs the published package; CI green on PRs.
+- CI (pytest matrix, Ubuntu+macOS, py3.10-3.12) and a tag-triggered PyPI
+  release workflow (trusted publishing) are in `.github/workflows/`.
+  **Publishing runs on the first `vX.Y.Z` tag** once the PyPI pending publisher
+  is registered.
 
 ---
 

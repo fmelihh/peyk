@@ -115,6 +115,17 @@ Running a model first means downloading it. peyk now detects free disk space
 - `HardwareProfile.disk_free_gb`; shown in the hardware panel and JSON.
 - A warning lists runnable models whose GGUF exceeds free disk.
 
+### ✅ M10 — Vision & math task profiles
+
+Close the last whichllm task-profile gap.
+
+- `ModelVariant.modality` ("text"/"vision"); catalog tags Gemma 3, Qwen2.5-VL,
+  and Llama 3.2 Vision as multimodal, with benchmark entries.
+- `--use-case vision` restricts results to multimodal models; `--use-case math`
+  reweights toward quality/context.
+- Model resolution prefers a text model on ambiguous ties (explicit "-VL"/vision
+  queries still resolve to the vision variant).
+
 ## Out of scope (deliberate)
 
 - `peyk run` (download + interactive chat) — breaks the report-only identity.

@@ -41,9 +41,15 @@ def recommend(
 ) -> Recommendation:
     languages = languages or ["en"]
     weights = weights_for(use_case)
+    vision_only = use_case == "vision"
     scored: List[ScoredModel] = []
     for cand in candidates:
-        best = best_runnable_variant(cand.variants, hw, context, languages, weights)
+        variants = cand.variants
+        if vision_only:
+            variants = [v for v in variants if v.modality == "vision"]
+        if not variants:
+            continue
+        best = best_runnable_variant(variants, hw, context, languages, weights)
         if best is None:
             continue
         if min_tps > 0 and best.fit.est_tokens_per_sec < min_tps:

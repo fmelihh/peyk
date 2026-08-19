@@ -19,7 +19,7 @@ from .scoring import best_runnable_variant, weights_for
 from .simulate import simulate_profile
 from .sources import build_catalog
 
-USE_CASES = ["chat", "coding", "summarize", "embedding"]
+USE_CASES = ["chat", "coding", "summarize", "embedding", "vision", "math"]
 SUBCOMMANDS = {"recommend", "hardware", "plan", "snippet"}
 SPEED_FLOOR = {"usable": 4.0, "fast": 10.0}
 

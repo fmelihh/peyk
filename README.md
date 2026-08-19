@@ -129,7 +129,8 @@ peyk --json                       # machine-readable output (for CI / scripts)
 peyk --markdown report.md         # write a shareable Markdown report
 ```
 
-`--use-case` accepts `chat`, `coding`, `summarize`, or `embedding`.
+`--use-case` accepts `chat`, `coding`, `summarize`, `embedding`, `vision`, or
+`math`. `vision` restricts the results to multimodal models.
 
 ### Subcommands
 

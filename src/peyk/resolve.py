@@ -47,7 +47,9 @@ def resolve_variant(
     if best_score <= 0:
         return None
     top = [v for v in variants if _score(query, v) == best_score]
-    # Prefer the requested quant, else the largest file (usually higher quality).
+    # Prefer the requested quant, then a text model over a same-score vision one
+    # (an explicit "-VL"/"vision" query already scores its family higher), then
+    # the largest file (usually higher quality).
     preferred = [v for v in top if v.quant.lower() == prefer_quant.lower()]
     pool = preferred or top
-    return max(pool, key=lambda v: v.file_size_gb)
+    return max(pool, key=lambda v: (v.modality == "text", v.file_size_gb))

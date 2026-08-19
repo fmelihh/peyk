@@ -32,6 +32,8 @@ USE_CASE_WEIGHTS = {
     "coding": {"speed": 0.20, "quality": 0.45, "language": 0.10, "context": 0.15, "license": 0.10},
     "summarize": {"speed": 0.20, "quality": 0.30, "language": 0.15, "context": 0.25, "license": 0.10},
     "embedding": {"speed": 0.40, "quality": 0.30, "language": 0.15, "context": 0.05, "license": 0.10},
+    "vision": {"speed": 0.20, "quality": 0.40, "language": 0.15, "context": 0.15, "license": 0.10},
+    "math": {"speed": 0.15, "quality": 0.50, "language": 0.05, "context": 0.20, "license": 0.10},
 }
 
 

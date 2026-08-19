@@ -85,6 +85,7 @@ class ModelVariant(BaseModel):
     quant: str = "Q4_K_M"
     file_size_gb: float
     active_params_b: Optional[float] = None  # MoE: active (< total) params per token
+    modality: str = "text"                   # "text" | "vision" (multimodal)
     context_max: int = 8192
     languages: List[str] = Field(default_factory=lambda: ["en"])
     license: str = "unknown"

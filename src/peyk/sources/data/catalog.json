@@ -21,9 +21,14 @@
     {"model_id": "gemma2:2b", "family": "Gemma 2", "params_b": 2, "quant": "Q4_K_M", "file_size_gb": 1.6, "context_max": 8192, "languages": ["multi"], "license": "gemma", "quality_score": 52},
     {"model_id": "gemma2:9b", "family": "Gemma 2", "params_b": 9, "quant": "Q4_K_M", "file_size_gb": 5.8, "context_max": 8192, "languages": ["multi"], "license": "gemma", "quality_score": 73},
     {"model_id": "gemma2:27b", "family": "Gemma 2", "params_b": 27, "quant": "Q4_K_M", "file_size_gb": 16.6, "context_max": 8192, "languages": ["multi"], "license": "gemma", "quality_score": 83},
-    {"model_id": "gemma3:4b", "family": "Gemma 3", "params_b": 4, "quant": "Q4_K_M", "file_size_gb": 3.3, "context_max": 131072, "languages": ["multi"], "license": "gemma", "quality_score": 66},
-    {"model_id": "gemma3:12b", "family": "Gemma 3", "params_b": 12, "quant": "Q4_K_M", "file_size_gb": 8.1, "context_max": 131072, "languages": ["multi"], "license": "gemma", "quality_score": 80},
-    {"model_id": "gemma3:27b", "family": "Gemma 3", "params_b": 27, "quant": "Q4_K_M", "file_size_gb": 17.0, "context_max": 131072, "languages": ["multi"], "license": "gemma", "quality_score": 85},
+    {"model_id": "gemma3:4b", "family": "Gemma 3", "params_b": 4, "quant": "Q4_K_M", "file_size_gb": 3.3, "context_max": 131072, "languages": ["multi"], "license": "gemma", "quality_score": 66, "modality": "vision"},
+    {"model_id": "gemma3:12b", "family": "Gemma 3", "params_b": 12, "quant": "Q4_K_M", "file_size_gb": 8.1, "context_max": 131072, "languages": ["multi"], "license": "gemma", "quality_score": 80, "modality": "vision"},
+    {"model_id": "gemma3:27b", "family": "Gemma 3", "params_b": 27, "quant": "Q4_K_M", "file_size_gb": 17.0, "context_max": 131072, "languages": ["multi"], "license": "gemma", "quality_score": 85, "modality": "vision"},
+
+    {"model_id": "qwen2.5vl:7b", "family": "Qwen2.5-VL", "params_b": 7, "quant": "Q4_K_M", "file_size_gb": 5.0, "context_max": 32768, "languages": ["multi"], "license": "apache-2.0", "quality_score": 74, "modality": "vision"},
+    {"model_id": "qwen2.5vl:72b", "family": "Qwen2.5-VL", "params_b": 72, "quant": "Q4_K_M", "file_size_gb": 47.0, "context_max": 32768, "languages": ["multi"], "license": "qwen", "quality_score": 88, "modality": "vision"},
+    {"model_id": "llama3.2-vision:11b", "family": "Llama 3.2 Vision", "params_b": 11, "quant": "Q4_K_M", "file_size_gb": 7.9, "context_max": 131072, "languages": ["en","de","fr","es","it","pt","hi","th"], "license": "llama3", "quality_score": 72, "modality": "vision"},
+    {"model_id": "llama3.2-vision:90b", "family": "Llama 3.2 Vision", "params_b": 90, "quant": "Q4_K_M", "file_size_gb": 55.0, "context_max": 131072, "languages": ["en","de","fr","es","it","pt","hi","th"], "license": "llama3", "quality_score": 87, "modality": "vision"},
 
     {"model_id": "phi4:14b", "family": "Phi-4", "params_b": 14, "quant": "Q4_K_M", "file_size_gb": 9.1, "context_max": 16384, "languages": ["en"], "license": "mit", "quality_score": 80},
     {"model_id": "phi3.5:3.8b", "family": "Phi-3.5-mini", "params_b": 3.8, "quant": "Q4_K_M", "file_size_gb": 2.4, "context_max": 131072, "languages": ["en"], "license": "mit", "quality_score": 63},

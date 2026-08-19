@@ -14,6 +14,12 @@ from .engine import CRITERIA, Recommendation
 from .models import FitTier, ScoredModel
 
 TIER_STYLE = {FitTier.FITS: "green", FitTier.TIGHT: "yellow", FitTier.NO_FIT: "red"}
+SOURCE_LABEL = {
+    "curated": "katalog",
+    "ollama": "ollama",
+    "huggingface": "HF✓",
+    "hf-discovered": "HF keşif",
+}
 TIER_LABEL = {FitTier.FITS: "RAHAT ÇALIŞIR", FitTier.TIGHT: "ZORLAR", FitTier.NO_FIT: "SIĞMAZ"}
 CRITERION_LABEL = {
     "speed": "Hız",
@@ -48,24 +54,28 @@ def _hardware_panel(rec: Recommendation) -> Panel:
 def _tier_table(rec: Recommendation) -> Table:
     table = Table(title="Uygunluk (en iyi çalışabilir quantization ile)")
     table.add_column("Durum", no_wrap=True)
-    table.add_column("Model", style="bold")
+    table.add_column("Model", style="bold", overflow="fold", min_width=12)
     table.add_column("Params", justify="right")
     table.add_column("Quant")
-    table.add_column("Bellek ihtiyacı", justify="right")
-    table.add_column("Hız (tahmini)", justify="right")
+    table.add_column("Bellek", justify="right")
+    table.add_column("Hız t/s", justify="right")
     table.add_column("Genel", justify="right")
+    table.add_column("Kaynak", no_wrap=True)
 
     for tier in (FitTier.FITS, FitTier.TIGHT, FitTier.NO_FIT):
         for s in rec.by_tier(tier):
             v = s.variant
+            src = SOURCE_LABEL.get(v.source, v.source)
+            src_text = Text(src, style="magenta" if v.source == "hf-discovered" else "dim")
             table.add_row(
                 Text(TIER_LABEL[tier], style=TIER_STYLE[tier]),
                 v.family,
                 f"{v.params_b:g}B",
                 v.quant,
                 f"{s.fit.mem_need_gb:.1f} GB",
-                f"~{s.fit.est_tokens_per_sec:.0f} tok/s",
+                f"~{s.fit.est_tokens_per_sec:.0f}",
                 f"{s.overall:.0f}",
+                src_text,
             )
     return table
 
@@ -92,7 +102,9 @@ def render_terminal(rec: Recommendation, top: int = 5, console: Console | None =
         console.print(_criterion_table(rec, criterion, top))
     console.print(
         "\n[dim]Not: bellek ve hız değerleri kaba tahmindir; gerçek sonuç "
-        "backend, quantization ve bağlam uzunluğuna göre değişir.[/dim]"
+        "backend, quantization ve bağlam uzunluğuna göre değişir. "
+        "'HF keşif' modellerinde kalite puanı yalnızca parametre sayısından "
+        "kestirilmiştir (benchmark yok).[/dim]"
     )
 
 
@@ -133,15 +145,17 @@ def to_markdown(rec: Recommendation, top: int = 5) -> str:
         "",
         "## Uygunluk",
         "",
-        "| Durum | Model | Params | Quant | Bellek | Hız (tahmini) | Genel |",
-        "|---|---|---:|---|---:|---:|---:|",
+        "| Durum | Model | Params | Quant | Bellek | Hız (tahmini) | Genel | Kaynak |",
+        "|---|---|---:|---|---:|---:|---:|---|",
     ]
     for tier in (FitTier.FITS, FitTier.TIGHT, FitTier.NO_FIT):
         for s in rec.by_tier(tier):
             v = s.variant
+            src = SOURCE_LABEL.get(v.source, v.source)
             lines.append(
                 f"| {TIER_LABEL[tier]} | {v.family} | {v.params_b:g}B | {v.quant} | "
-                f"{s.fit.mem_need_gb:.1f} GB | ~{s.fit.est_tokens_per_sec:.0f} tok/s | {s.overall:.0f} |"
+                f"{s.fit.mem_need_gb:.1f} GB | ~{s.fit.est_tokens_per_sec:.0f} tok/s "
+                f"| {s.overall:.0f} | {src} |"
             )
     lines.append("")
     for criterion in CRITERIA:

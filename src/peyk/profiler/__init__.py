@@ -6,6 +6,7 @@ returns partial data rather than raising, so a report is always producible.
 
 from __future__ import annotations
 
+import os
 import platform
 from typing import List
 
@@ -25,6 +26,12 @@ def detect(deep: bool = False, allow_sudo: bool = False) -> HardwareProfile:
     ram_total = round(vm.total / GB, 1)
     ram_avail = round(vm.available / GB, 1)
 
+    # Free space where models are typically downloaded (home dir).
+    try:
+        disk_free = round(psutil.disk_usage(os.path.expanduser("~")).free / GB, 1)
+    except OSError:
+        disk_free = 0.0
+
     acc = detect_accelerator()
 
     profile = HardwareProfile(
@@ -35,6 +42,7 @@ def detect(deep: bool = False, allow_sudo: bool = False) -> HardwareProfile:
         cpu_flags=cpu_flags(),
         ram_total_gb=ram_total,
         ram_available_gb=ram_avail,
+        disk_free_gb=disk_free,
         accelerator=acc.kind,
         accelerator_name=acc.name,
         gpu_count=acc.count,

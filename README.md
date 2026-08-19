@@ -184,8 +184,10 @@ peyk --json --use-case chat | jq '.models[] | select(.tier=="FITS") | .model' | 
 
 ## What the report shows
 
-- **Hardware Profile** — OS/arch, CPU, RAM, accelerator, VRAM (aggregated across
-  GPUs), the usable memory pool used for sizing, and an estimated memory bandwidth.
+- **Hardware Profile** — OS/arch, CPU, RAM, free disk, accelerator, VRAM
+  (aggregated across GPUs), the usable memory pool used for sizing, and an
+  estimated memory bandwidth. Models that fit in memory but exceed free disk
+  (you still have to download them) are flagged.
 - **Feasibility table** — every model reduced to its best runnable quantization,
   grouped into `RUNS WELL` / `TIGHT` / `WON'T FIT`, with estimated memory,
   estimated speed, an overall score, and a **Source** column

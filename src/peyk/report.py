@@ -39,6 +39,8 @@ def _hardware_panel(hw) -> Panel:
         f"({hw.cpu_cores_logical} threads)  flags: {', '.join(hw.cpu_flags) or '-'}",
         f"[bold]RAM:[/bold] {hw.ram_available_gb:.1f} / {hw.ram_total_gb:.1f} GB free",
     ]
+    if hw.disk_free_gb:
+        lines.append(f"[bold]Disk free:[/bold] {hw.disk_free_gb:.1f} GB (for downloads)")
     if hw.ram_type or hw.ram_speed_mtps:
         ram_spec = " ".join(
             p for p in (hw.ram_type, f"{hw.ram_speed_mtps} MT/s" if hw.ram_speed_mtps else None,
@@ -117,11 +119,28 @@ def _criterion_table(rec: Recommendation, criterion: str, n: int) -> Table:
     return table
 
 
+def _disk_warning(rec: Recommendation) -> str | None:
+    """Flag models that fit in memory but exceed free disk (must download first)."""
+    disk = rec.hw.disk_free_gb
+    if disk <= 0:
+        return None
+    runnable = [s for s in rec.scored if s.fit.tier != FitTier.NO_FIT]
+    too_big = [s for s in runnable if s.variant.file_size_gb > disk]
+    if not too_big:
+        return None
+    biggest = max(too_big, key=lambda s: s.variant.file_size_gb)
+    return (f"⚠ {len(too_big)} runnable model(s) exceed free disk ({disk:.1f} GB) — "
+            f"e.g. {biggest.variant.family} needs {biggest.variant.file_size_gb:.1f} GB to download.")
+
+
 def render_terminal(rec: Recommendation, top: int = 5, console: Console | None = None) -> None:
     console = console or Console()
     console.print(_hardware_panel(rec.hw))
     console.print()
     console.print(_tier_table(rec))
+    disk_warn = _disk_warning(rec)
+    if disk_warn:
+        console.print(f"[yellow]{disk_warn}[/yellow]")
     console.print()
     for criterion in CRITERIA:
         console.print(_criterion_table(rec, criterion, top))

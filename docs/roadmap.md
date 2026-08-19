@@ -107,6 +107,14 @@ a confidence signal.
 
 ---
 
+### ✅ M9 — Disk-space awareness
+
+Running a model first means downloading it. peyk now detects free disk space
+(home dir) and flags models that fit in memory but won't fit on disk.
+
+- `HardwareProfile.disk_free_gb`; shown in the hardware panel and JSON.
+- A warning lists runnable models whose GGUF exceeds free disk.
+
 ## Out of scope (deliberate)
 
 - `peyk run` (download + interactive chat) — breaks the report-only identity.

@@ -31,6 +31,7 @@ class HardwareProfile(BaseModel):
     cpu_flags: List[str] = Field(default_factory=list)
     ram_total_gb: float
     ram_available_gb: float
+    disk_free_gb: float = 0.0                # free space where models download
     ram_type: Optional[str] = None          # e.g. DDR5, LPDDR5 (deep probe)
     ram_speed_mtps: Optional[int] = None     # transfer rate in MT/s (deep probe)
     ram_channels: Optional[int] = None       # populated DIMMs / channels (deep probe)

@@ -11,7 +11,6 @@ from __future__ import annotations
 import difflib
 import re
 from dataclasses import dataclass
-from typing import List, Optional, Tuple
 
 from .models import Accelerator
 
@@ -75,7 +74,7 @@ def _normalize(name: str) -> str:
     return re.sub(r"\s+", " ", name.strip().lower())
 
 
-def lookup_gpu(name: str) -> Optional[GpuSpec]:
+def lookup_gpu(name: str) -> GpuSpec | None:
     """Find a GPU by (fuzzy) name. Longest matching canonical key wins."""
     n = _normalize(name)
     if n in GPU_DB:
@@ -88,11 +87,11 @@ def lookup_gpu(name: str) -> Optional[GpuSpec]:
     return None
 
 
-def suggest(name: str, n: int = 3) -> List[str]:
+def suggest(name: str, n: int = 3) -> list[str]:
     return difflib.get_close_matches(_normalize(name), list(GPU_DB), n=n, cutoff=0.3)
 
 
-def parse_gpu_arg(arg: str) -> Tuple[GpuSpec, int]:
+def parse_gpu_arg(arg: str) -> tuple[GpuSpec, int]:
     """Parse a `--gpu` value like "RTX 4090", "2x RTX 5090", or "A100 80GB".
 
     Returns (spec, count). Raises ValueError (with suggestions) on no match.

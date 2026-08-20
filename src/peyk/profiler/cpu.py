@@ -4,14 +4,13 @@ from __future__ import annotations
 
 import platform
 import subprocess
-from typing import List
 
 INTERESTING = ("avx512", "avx2", "avx", "neon", "fma", "f16c")
 
 
 def _read_proc_cpuinfo() -> str:
     try:
-        with open("/proc/cpuinfo", "r") as fh:
+        with open("/proc/cpuinfo") as fh:
             return fh.read().lower()
     except OSError:
         return ""
@@ -27,7 +26,7 @@ def _sysctl(key: str) -> str:
         return ""
 
 
-def cpu_flags() -> List[str]:
+def cpu_flags() -> list[str]:
     system = platform.system()
     blob = ""
     if system == "Linux":

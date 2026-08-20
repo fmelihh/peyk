@@ -6,8 +6,6 @@ is a weighted blend used only as a tie-break / default sort.
 
 from __future__ import annotations
 
-from typing import Dict, List
-
 from . import benchmarks
 from .estimator import estimate_fit
 from .models import FitResult, FitTier, HardwareProfile, ModelVariant, ScoredModel
@@ -50,10 +48,10 @@ def quality_score(variant: ModelVariant) -> float:
     return _clamp(benchmarks.evaluate(variant).effective)
 
 
-def language_score(variant: ModelVariant, wanted: List[str]) -> float:
+def language_score(variant: ModelVariant, wanted: list[str]) -> float:
     if not wanted:
         return 100.0
-    supported = {l.lower() for l in variant.languages}
+    supported = {lang.lower() for lang in variant.languages}
     if "multi" in supported:
         return 100.0
     hits = sum(1 for w in wanted if w.lower() in supported)
@@ -84,8 +82,8 @@ def score_variant(
     variant: ModelVariant,
     hw: HardwareProfile,
     context: int,
-    languages: List[str],
-    weights: Dict[str, float],
+    languages: list[str],
+    weights: dict[str, float],
 ) -> ScoredModel:
     fit = estimate_fit(variant, hw, context)
     evidence = benchmarks.evaluate(variant)
@@ -103,18 +101,18 @@ def score_variant(
     )
 
 
-def weights_for(use_case: str | None) -> Dict[str, float]:
+def weights_for(use_case: str | None) -> dict[str, float]:
     if use_case and use_case in USE_CASE_WEIGHTS:
         return USE_CASE_WEIGHTS[use_case]
     return DEFAULT_WEIGHTS
 
 
 def best_runnable_variant(
-    candidate_variants: List[ModelVariant],
+    candidate_variants: list[ModelVariant],
     hw: HardwareProfile,
     context: int,
-    languages: List[str],
-    weights: Dict[str, float],
+    languages: list[str],
+    weights: dict[str, float],
 ) -> ScoredModel | None:
     """Pick the highest-overall variant that at least TIGHT-fits.
 

@@ -39,7 +39,7 @@ Issues = "https://github.com/fmelihh/peyk/issues"
 [project.optional-dependencies]
 hf = ["huggingface_hub>=0.24"]
 nvidia = ["pynvml>=11.5"]
-dev = ["pytest>=8.0", "pytest-mock>=3.12"]
+dev = ["pytest>=8.0", "pytest-mock>=3.12", "ruff>=0.6", "mypy>=1.8"]
 
 [project.scripts]
 peyk = "peyk.cli:main"
@@ -53,3 +53,14 @@ peyk = ["sources/data/*.json", "benchmarks/data/*.json", "scripts/*.sh", "script
 [tool.pytest.ini_options]
 pythonpath = ["src"]
 testpaths = ["tests"]
+
+[tool.ruff]
+line-length = 110
+target-version = "py310"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "W", "B", "UP"]
+ignore = ["B008"]  # argparse/default-call patterns are fine here
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = ["E741"]  # short loop vars in tests are fine

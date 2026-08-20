@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import List, Protocol, runtime_checkable
+from typing import Protocol, runtime_checkable
 
 from ..models import ModelVariant
 
@@ -18,5 +18,5 @@ class Source(Protocol):
 
     name: str
 
-    def fetch(self) -> List[ModelVariant]:  # pragma: no cover - protocol
+    def fetch(self) -> list[ModelVariant]:  # pragma: no cover - protocol
         ...

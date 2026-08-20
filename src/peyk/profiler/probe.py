@@ -17,7 +17,6 @@ import os
 import platform
 import subprocess
 from importlib import resources
-from typing import Optional
 
 from ..models import Accelerator, HardwareProfile
 from .bandwidth import estimate_bandwidth
@@ -44,14 +43,14 @@ def _script_command(script_path: str, allow_sudo: bool) -> list[str]:
     return ["bash", script_path]
 
 
-def run_probe(allow_sudo: bool = False, timeout: float = 20.0) -> Optional[dict]:
+def run_probe(allow_sudo: bool = False, timeout: float = 20.0) -> dict | None:
     """Run the platform probe script and return parsed JSON, or None."""
     script = _SCRIPTS.get(platform.system())
     if not script:
         return None
     try:
         with resources.as_file(
-            resources.files("peyk").joinpath("scripts", script)
+            resources.files("peyk").joinpath("scripts").joinpath(script)
         ) as path:
             # stdout is captured for JSON; stderr/stdin inherit the tty so an
             # interactive `sudo` password prompt still works.
@@ -71,13 +70,13 @@ def run_probe(allow_sudo: bool = False, timeout: float = 20.0) -> Optional[dict]
         return None
 
 
-def bandwidth_from_dimms(dimms: Optional[int], speed_mtps: Optional[int]) -> Optional[float]:
+def bandwidth_from_dimms(dimms: int | None, speed_mtps: int | None) -> float | None:
     if not dimms or not speed_mtps:
         return None
     return round(dimms * speed_mtps * _BYTES_PER_CHANNEL / 1000, 1)
 
 
-def enrich_profile(profile: HardwareProfile, data: Optional[dict]) -> HardwareProfile:
+def enrich_profile(profile: HardwareProfile, data: dict | None) -> HardwareProfile:
     """Fold deep-probe data into a baseline profile. Pure and side-effect free."""
     if not data:
         return profile

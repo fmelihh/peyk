@@ -10,8 +10,8 @@ import hashlib
 import json
 import os
 import time
+from collections.abc import Callable
 from pathlib import Path
-from typing import Callable, List, Optional
 
 from .models import ModelVariant
 
@@ -30,7 +30,7 @@ def _path(key: str) -> Path:
     return cache_dir() / (hashlib.sha1(key.encode("utf-8")).hexdigest() + ".json")
 
 
-def read_fresh(key: str, ttl: float) -> Optional[list]:
+def read_fresh(key: str, ttl: float) -> list | None:
     p = _path(key)
     try:
         if time.time() - p.stat().st_mtime > ttl:
@@ -47,7 +47,7 @@ def write(key: str, data: list) -> None:
         pass
 
 
-def key_for(name: str, seed_ids: List[str]) -> str:
+def key_for(name: str, seed_ids: list[str]) -> str:
     digest = hashlib.sha1("|".join(sorted(seed_ids)).encode("utf-8")).hexdigest()[:12]
     return f"{name}:{digest}"
 
@@ -55,9 +55,9 @@ def key_for(name: str, seed_ids: List[str]) -> str:
 def cached_variants(
     key: str,
     ttl: float,
-    producer: Callable[[], List[ModelVariant]],
+    producer: Callable[[], list[ModelVariant]],
     use_cache: bool = True,
-) -> List[ModelVariant]:
+) -> list[ModelVariant]:
     """Return cached variants if fresh, else run `producer` and cache its output."""
     if use_cache:
         data = read_fresh(key, ttl)

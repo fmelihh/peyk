@@ -7,15 +7,13 @@ one".
 
 from __future__ import annotations
 
-from typing import Optional
-
 from .gpus import parse_gpu_arg
 from .models import VRAM_USABLE_FRACTION, HardwareProfile
 from .profiler import detect
 
 
 def simulate_profile(
-    gpu_arg: str, gpu_only: bool = False, base: Optional[HardwareProfile] = None
+    gpu_arg: str, gpu_only: bool = False, base: HardwareProfile | None = None
 ) -> HardwareProfile:
     spec, count = parse_gpu_arg(gpu_arg)
     base = base if base is not None else detect()

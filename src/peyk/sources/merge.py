@@ -2,12 +2,10 @@
 
 from __future__ import annotations
 
-from typing import Dict, List
-
 from ..models import ModelCandidate, ModelVariant
 
 
-def merge_variants(source_results: List[List[ModelVariant]]) -> List[ModelVariant]:
+def merge_variants(source_results: list[list[ModelVariant]]) -> list[ModelVariant]:
     """Combine per-source variant lists.
 
     The first list is treated as the base (curated: authoritative metadata).
@@ -15,7 +13,7 @@ def merge_variants(source_results: List[List[ModelVariant]]) -> List[ModelVarian
     genuinely new variants. Cross-checked sizes are averaged when live sources
     disagree only slightly; otherwise the most recent live value wins.
     """
-    merged: Dict[str, ModelVariant] = {}
+    merged: dict[str, ModelVariant] = {}
     for i, results in enumerate(source_results):
         for v in results:
             key = v.merge_key()
@@ -32,8 +30,8 @@ def merge_variants(source_results: List[List[ModelVariant]]) -> List[ModelVarian
     return list(merged.values())
 
 
-def to_candidates(variants: List[ModelVariant]) -> List[ModelCandidate]:
-    grouped: Dict[str, ModelCandidate] = {}
+def to_candidates(variants: list[ModelVariant]) -> list[ModelCandidate]:
+    grouped: dict[str, ModelCandidate] = {}
     for v in variants:
         key = f"{v.family.lower()}|{v.params_b}"
         if key not in grouped:

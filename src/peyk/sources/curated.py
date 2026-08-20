@@ -4,7 +4,6 @@ from __future__ import annotations
 
 import json
 from importlib import resources
-from typing import List
 
 from ..models import ModelVariant
 
@@ -17,17 +16,17 @@ class CuratedSource:
 
     def _load_raw(self) -> dict:
         if self._path:
-            with open(self._path, "r") as fh:
+            with open(self._path) as fh:
                 return json.load(fh)
         data = resources.files("peyk.sources.data").joinpath("catalog.json")
         return json.loads(data.read_text(encoding="utf-8"))
 
-    def fetch(self) -> List[ModelVariant]:
+    def fetch(self) -> list[ModelVariant]:
         try:
             raw = self._load_raw()
         except (OSError, json.JSONDecodeError):
             return []
-        variants: List[ModelVariant] = []
+        variants: list[ModelVariant] = []
         for item in raw.get("variants", []):
             try:
                 variants.append(ModelVariant(source="curated", **item))

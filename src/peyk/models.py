@@ -3,10 +3,8 @@
 from __future__ import annotations
 
 from enum import Enum
-from typing import List, Optional
 
 from pydantic import BaseModel, Field
-
 
 # Fraction of total memory assumed usable for a model (rest = OS + other apps).
 RAM_USABLE_FRACTION = 0.8
@@ -25,18 +23,18 @@ class HardwareProfile(BaseModel):
 
     os: str
     arch: str
-    cpu_model: Optional[str] = None
+    cpu_model: str | None = None
     cpu_cores_physical: int
     cpu_cores_logical: int
-    cpu_flags: List[str] = Field(default_factory=list)
+    cpu_flags: list[str] = Field(default_factory=list)
     ram_total_gb: float
     ram_available_gb: float
     disk_free_gb: float = 0.0                # free space where models download
-    ram_type: Optional[str] = None          # e.g. DDR5, LPDDR5 (deep probe)
-    ram_speed_mtps: Optional[int] = None     # transfer rate in MT/s (deep probe)
-    ram_channels: Optional[int] = None       # populated DIMMs / channels (deep probe)
+    ram_type: str | None = None          # e.g. DDR5, LPDDR5 (deep probe)
+    ram_speed_mtps: int | None = None     # transfer rate in MT/s (deep probe)
+    ram_channels: int | None = None       # populated DIMMs / channels (deep probe)
     accelerator: Accelerator = Accelerator.NONE
-    accelerator_name: Optional[str] = None
+    accelerator_name: str | None = None
     gpu_count: int = 0
     vram_total_gb: float = 0.0  # aggregate across all GPUs of this accelerator
     unified_memory: bool = False
@@ -45,7 +43,7 @@ class HardwareProfile(BaseModel):
     vram_usable_fraction: float = VRAM_USABLE_FRACTION  # 1.0 under --gpu-only
     simulated: bool = False
     reserve_gb: float = 0.0            # extra headroom subtracted from the pool
-    pool_cap_gb: Optional[float] = None  # hard cap on the usable pool (budget)
+    pool_cap_gb: float | None = None  # hard cap on the usable pool (budget)
 
     @property
     def memory_pool_gb(self) -> float:
@@ -84,16 +82,16 @@ class ModelVariant(BaseModel):
     params_b: float
     quant: str = "Q4_K_M"
     file_size_gb: float
-    active_params_b: Optional[float] = None  # MoE: active (< total) params per token
+    active_params_b: float | None = None  # MoE: active (< total) params per token
     modality: str = "text"                   # "text" | "vision" (multimodal)
     context_max: int = 8192
-    languages: List[str] = Field(default_factory=lambda: ["en"])
+    languages: list[str] = Field(default_factory=lambda: ["en"])
     license: str = "unknown"
     quality_score: float = 50.0  # 0-100 proxy for capability
     source: str = "curated"
     # Optional architecture hints for a sharper KV-cache estimate.
-    n_layers: Optional[int] = None
-    hidden: Optional[int] = None
+    n_layers: int | None = None
+    hidden: int | None = None
     gqa_factor: float = 0.25  # modern GQA models cache far less than MHA (1.0)
 
     def merge_key(self) -> str:
@@ -105,7 +103,7 @@ class ModelCandidate(BaseModel):
 
     family: str
     params_b: float
-    variants: List[ModelVariant] = Field(default_factory=list)
+    variants: list[ModelVariant] = Field(default_factory=list)
 
     @property
     def key(self) -> str:
@@ -127,4 +125,4 @@ class ScoredModel(BaseModel):
     scores: dict  # criterion -> 0-100
     overall: float
     quality_evidence: str = "proxy"  # direct | interpolated | family | proxy
-    quality_source: Optional[str] = None
+    quality_source: str | None = None

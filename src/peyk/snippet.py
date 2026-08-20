@@ -5,7 +5,6 @@ downloads or executes anything.
 from __future__ import annotations
 
 import re
-from typing import Dict
 
 from .models import HardwareProfile, ModelVariant
 
@@ -17,9 +16,9 @@ def _ollama_ref(model_id: str) -> str:
     return _QUANT_SUFFIX.sub("", model_id)
 
 
-def build_snippets(variant: ModelVariant, hw: HardwareProfile) -> Dict[str, object]:
+def build_snippets(variant: ModelVariant, hw: HardwareProfile) -> dict[str, object]:
     """Return a structured set of run recipes for `variant` on `hw`."""
-    commands: Dict[str, str] = {}
+    commands: dict[str, str] = {}
 
     if variant.source == "hf-discovered" and variant.model_id.startswith("hf:"):
         # "hf:<repo>:<QUANT>"

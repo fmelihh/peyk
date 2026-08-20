@@ -8,8 +8,6 @@ curated data.
 
 from __future__ import annotations
 
-from typing import List, Optional
-
 import httpx
 
 from ..models import ModelVariant
@@ -24,15 +22,15 @@ class OllamaSource:
 
     def __init__(
         self,
-        seed: List[ModelVariant],
-        client: Optional[httpx.Client] = None,
+        seed: list[ModelVariant],
+        client: httpx.Client | None = None,
         timeout: float = 6.0,
     ) -> None:
         self._seed = seed
         self._client = client
         self._timeout = timeout
 
-    def _manifest_size_gb(self, client: httpx.Client, name: str, tag: str) -> Optional[float]:
+    def _manifest_size_gb(self, client: httpx.Client, name: str, tag: str) -> float | None:
         url = f"{REGISTRY}/{name}/manifests/{tag}"
         resp = client.get(url, headers={"Accept": MANIFEST_ACCEPT}, timeout=self._timeout)
         if resp.status_code != 200:
@@ -45,10 +43,10 @@ class OllamaSource:
                     return round(size / 1e9, 2)
         return None
 
-    def fetch(self) -> List[ModelVariant]:
+    def fetch(self) -> list[ModelVariant]:
         owns_client = self._client is None
         client = self._client or httpx.Client()
-        out: List[ModelVariant] = []
+        out: list[ModelVariant] = []
         try:
             for v in self._seed:
                 if ":" not in v.model_id:

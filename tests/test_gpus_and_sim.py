@@ -1,6 +1,6 @@
 import pytest
 
-from peyk.gpus import GPU_DB, lookup_gpu, parse_gpu_arg
+from peyk.gpus import lookup_gpu, parse_gpu_arg
 from peyk.models import Accelerator
 from peyk.simulate import simulate_profile
 

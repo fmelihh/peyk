@@ -1,5 +1,4 @@
 import httpx
-import pytest
 
 from peyk.models import ModelVariant
 from peyk.sources import build_catalog

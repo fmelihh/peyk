@@ -2,8 +2,6 @@
 
 from __future__ import annotations
 
-from typing import List
-
 from ..cache import DISCOVER_TTL, SIZES_TTL, cached_variants, key_for
 from ..models import ModelCandidate, ModelVariant
 from .curated import CuratedSource
@@ -18,7 +16,7 @@ def build_catalog(
     cross_check: bool = False,
     discover: bool = False,
     use_cache: bool = True,
-) -> List[ModelCandidate]:
+) -> list[ModelCandidate]:
     """Assemble the merged model catalog.
 
     - offline / default: curated only (deterministic, no network).
@@ -29,7 +27,7 @@ def build_catalog(
     False.
     """
     curated = CuratedSource().fetch()
-    results: List[List[ModelVariant]] = [curated]
+    results: list[list[ModelVariant]] = [curated]
     seed_ids = [v.model_id for v in curated]
 
     if not offline:

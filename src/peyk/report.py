@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import json
-from typing import List
 
 from rich.console import Console
 from rich.panel import Panel
@@ -110,8 +109,8 @@ def _criterion_table(rec: Recommendation, criterion: str, n: int) -> Table:
     if show_conf:
         table.add_column("Evidence", no_wrap=True)
     for i, s in enumerate(rec.top_by(criterion, n=n), 1):
-        row = [str(i), s.variant.family, f"{s.variant.params_b:g}B",
-               f"{s.scores.get(criterion, 0):.0f}"]
+        row: list = [str(i), s.variant.family, f"{s.variant.params_b:g}B",
+                     f"{s.scores.get(criterion, 0):.0f}"]
         if show_conf:
             row.append(Text(s.quality_evidence,
                             style=_EVIDENCE_STYLE.get(s.quality_evidence, "dim")))
@@ -241,7 +240,7 @@ def snippet_to_json(data: dict) -> str:
 
 
 def to_markdown(rec: Recommendation, top: int = 5) -> str:
-    lines: List[str] = ["# peyk — LLM model recommendation", ""]
+    lines: list[str] = ["# peyk — LLM model recommendation", ""]
     hw = rec.hw
     lines += [
         "## Hardware",

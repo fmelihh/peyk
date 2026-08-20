@@ -6,7 +6,6 @@ Inverts the fit estimator over the GPU database and the FITS/TIGHT thresholds.
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import List, Optional
 
 from .estimator import FITS_RATIO, TIGHT_RATIO, memory_need_gb
 from .gpus import GPU_DB, GpuSpec
@@ -27,19 +26,19 @@ class PlanResult:
     min_vram_fits_gb: float     # VRAM needed to comfortably fit (single device)
     min_vram_tight_gb: float
     ram_needed_gb: float        # for CPU / unified-memory hosts
-    cheapest_fits: Optional[GpuSpec]
-    cheapest_tight: Optional[GpuSpec]
-    multi_gpu: Optional[GpuFit]  # smallest common GPU sharded to fit, if no single card does
+    cheapest_fits: GpuSpec | None
+    cheapest_tight: GpuSpec | None
+    multi_gpu: GpuFit | None  # smallest common GPU sharded to fit, if no single card does
 
 
-def _smallest_fitting(need: float, ratio: float) -> Optional[GpuSpec]:
+def _smallest_fitting(need: float, ratio: float) -> GpuSpec | None:
     fitting = [s for s in GPU_DB.values() if s.vram_gb * ratio >= need]
     return min(fitting, key=lambda s: s.vram_gb) if fitting else None
 
 
-def _multi_gpu_option(need: float) -> Optional[GpuFit]:
+def _multi_gpu_option(need: float) -> GpuFit | None:
     # Find the cheapest (smallest-VRAM) card that fits with 2-8 of them.
-    best: Optional[GpuFit] = None
+    best: GpuFit | None = None
     for spec in GPU_DB.values():
         for n in range(2, 9):
             if spec.vram_gb * n * FITS_RATIO >= need:

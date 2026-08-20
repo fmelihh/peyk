@@ -8,8 +8,6 @@ an empty list so curated/ollama data still stands.
 
 from __future__ import annotations
 
-from typing import Dict, List, Optional
-
 import httpx
 
 from ..models import ModelVariant
@@ -17,7 +15,7 @@ from ..models import ModelVariant
 HF_API = "https://huggingface.co/api/models"
 
 # family -> GGUF repo hint. Extend as the catalog grows.
-REPO_HINTS: Dict[str, str] = {
+REPO_HINTS: dict[str, str] = {
     "llama 3.1": "bartowski/Meta-Llama-3.1-8B-Instruct-GGUF",
     "qwen2.5": "Qwen/Qwen2.5-7B-Instruct-GGUF",
     "qwen2.5-coder": "Qwen/Qwen2.5-Coder-7B-Instruct-GGUF",
@@ -32,8 +30,8 @@ class HuggingFaceSource:
 
     def __init__(
         self,
-        seed: List[ModelVariant],
-        client: Optional[httpx.Client] = None,
+        seed: list[ModelVariant],
+        client: httpx.Client | None = None,
         timeout: float = 6.0,
     ) -> None:
         self._seed = seed
@@ -42,7 +40,7 @@ class HuggingFaceSource:
 
     def _gguf_size_gb(
         self, client: httpx.Client, repo: str, quant: str
-    ) -> Optional[float]:
+    ) -> float | None:
         resp = client.get(f"{HF_API}/{repo}", timeout=self._timeout)
         if resp.status_code != 200:
             return None
@@ -56,10 +54,10 @@ class HuggingFaceSource:
                     return round(size / 1e9, 2)
         return None
 
-    def fetch(self) -> List[ModelVariant]:
+    def fetch(self) -> list[ModelVariant]:
         owns_client = self._client is None
         client = self._client or httpx.Client()
-        out: List[ModelVariant] = []
+        out: list[ModelVariant] = []
         try:
             for v in self._seed:
                 repo = REPO_HINTS.get(v.family.lower())

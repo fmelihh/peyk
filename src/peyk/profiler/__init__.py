@@ -8,7 +8,6 @@ from __future__ import annotations
 
 import os
 import platform
-from typing import List
 
 import psutil
 

@@ -7,7 +7,6 @@ when the query names a size (e.g. "70b"), the parameter count.
 from __future__ import annotations
 
 import re
-from typing import List, Optional
 
 from .models import ModelCandidate, ModelVariant
 
@@ -19,7 +18,7 @@ def _tokens(text: str) -> set[str]:
     return set(_TOKEN_RE.findall(text.lower()))
 
 
-def _query_params(query: str) -> Optional[float]:
+def _query_params(query: str) -> float | None:
     m = _PARAMS_RE.search(query)
     return float(m.group(1)) if m else None
 
@@ -37,8 +36,8 @@ def _score(query: str, variant: ModelVariant) -> float:
 
 
 def resolve_variant(
-    query: str, candidates: List[ModelCandidate], prefer_quant: str = "Q4_K_M"
-) -> Optional[ModelVariant]:
+    query: str, candidates: list[ModelCandidate], prefer_quant: str = "Q4_K_M"
+) -> ModelVariant | None:
     """Return the best-matching variant, preferring a common quant on ties."""
     variants = [v for c in candidates for v in c.variants]
     if not variants:

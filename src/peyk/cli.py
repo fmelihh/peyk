@@ -8,7 +8,6 @@ from __future__ import annotations
 
 import argparse
 import sys
-from typing import List, Optional
 
 from rich.console import Console
 
@@ -108,7 +107,7 @@ def _resolve_hardware(args, status: Console):
             return simulate_profile(args.gpu, gpu_only=getattr(args, "gpu_only", False))
         except ValueError as exc:
             status.print(f"[red]{exc}[/red]")
-            raise SystemExit(2)
+            raise SystemExit(2) from None
     deep = getattr(args, "deep", False) or getattr(args, "sudo", False)
     if deep:
         status.print("[dim]Running native hardware probe...[/dim]")
@@ -130,7 +129,7 @@ def _catalog_for(args, status: Console):
 
 
 def _cmd_recommend(args, console: Console, status: Console) -> int:
-    languages = [l.strip() for l in args.languages.split(",") if l.strip()]
+    languages = [lang.strip() for lang in args.languages.split(",") if lang.strip()]
     if args.live_benchmarks:
         from . import benchmarks
         n = benchmarks.load_live(url=args.benchmarks_url, use_cache=not args.no_cache)
@@ -222,7 +221,7 @@ _DISPATCH = {
 }
 
 
-def main(argv: Optional[List[str]] = None) -> int:
+def main(argv: list[str] | None = None) -> int:
     argv = list(sys.argv[1:] if argv is None else argv)
     # Default to `recommend` when no subcommand (and not a top-level flag) is given.
     if not argv or (argv[0] not in SUBCOMMANDS and argv[0] not in ("-h", "--help", "--version")):

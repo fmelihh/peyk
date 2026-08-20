@@ -1,4 +1,4 @@
-from peyk.models import HardwareProfile, Accelerator
+from peyk.models import Accelerator, HardwareProfile
 from peyk.planner import plan
 from peyk.resolve import resolve_variant
 from peyk.snippet import build_snippets

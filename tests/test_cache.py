@@ -1,4 +1,3 @@
-import os
 
 from peyk import cache
 from peyk.models import ModelVariant

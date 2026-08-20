@@ -13,22 +13,21 @@ bundled frozen snapshot.
 from __future__ import annotations
 
 import os
-from typing import List, Optional
 
 import httpx
 
 ENV_URL = "PEYK_BENCHMARKS_URL"
 
 
-def resolve_url(url: Optional[str] = None) -> Optional[str]:
+def resolve_url(url: str | None = None) -> str | None:
     return url or os.environ.get(ENV_URL) or None
 
 
 def fetch_live(
-    url: Optional[str] = None,
-    client: Optional[httpx.Client] = None,
+    url: str | None = None,
+    client: httpx.Client | None = None,
     timeout: float = 8.0,
-) -> List[dict]:
+) -> list[dict]:
     """Fetch live benchmark entries. Returns [] when disabled or on any error."""
     target = resolve_url(url)
     if not target:

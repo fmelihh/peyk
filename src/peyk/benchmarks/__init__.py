@@ -16,7 +16,6 @@ from __future__ import annotations
 import json
 from dataclasses import dataclass
 from importlib import resources
-from typing import Dict, List, Optional, Tuple
 
 from ..models import ModelVariant
 
@@ -25,7 +24,7 @@ _MULTIPLIER = {"live": 1.0, "direct": 1.0, "interpolated": 0.90,
 _REPACKAGER_RATIO = 2.0
 
 # Live overlay: (family_lower, params_b) -> quality. Populated by activate_live().
-_LIVE: Dict[Tuple[str, float], dict] = {}
+_LIVE: dict[tuple[str, float], dict] = {}
 
 
 @dataclass(frozen=True)
@@ -43,10 +42,10 @@ class QualityEvidence:
         return round(self.base * self.multiplier, 1)
 
 
-def _load() -> Tuple[Dict[str, List[dict]], str]:
+def _load() -> tuple[dict[str, list[dict]], str]:
     data = resources.files("peyk.benchmarks.data").joinpath("benchmarks.json")
     raw = json.loads(data.read_text(encoding="utf-8"))
-    by_family: Dict[str, List[dict]] = {}
+    by_family: dict[str, list[dict]] = {}
     for e in raw.get("entries", []):
         by_family.setdefault(e["family"].lower(), []).append(e)
     for entries in by_family.values():
@@ -57,8 +56,8 @@ def _load() -> Tuple[Dict[str, List[dict]], str]:
 _BY_FAMILY, _SOURCE = _load()
 
 
-def _interpolate(entries: List[dict], p: float) -> Optional[float]:
-    for lo, hi in zip(entries, entries[1:]):
+def _interpolate(entries: list[dict], p: float) -> float | None:
+    for lo, hi in zip(entries, entries[1:], strict=False):
         if lo["params_b"] <= p <= hi["params_b"]:
             span = hi["params_b"] - lo["params_b"]
             if span <= 0:
@@ -73,7 +72,7 @@ def _divergent(a: float, b: float) -> bool:
     return lo <= 0 or hi / lo > _REPACKAGER_RATIO
 
 
-def activate_live(entries: List[dict]) -> int:
+def activate_live(entries: list[dict]) -> int:
     """Load live benchmark entries as an overlay taking precedence over frozen."""
     _LIVE.clear()
     for e in entries:
@@ -81,7 +80,7 @@ def activate_live(entries: List[dict]) -> int:
     return len(_LIVE)
 
 
-def load_live(url: Optional[str] = None, use_cache: bool = True) -> int:
+def load_live(url: str | None = None, use_cache: bool = True) -> int:
     """Fetch (cached) and activate the live tier. Returns entries loaded."""
     from .. import cache
     from . import live

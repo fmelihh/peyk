@@ -15,7 +15,7 @@ from __future__ import annotations
 
 import re
 from collections import defaultdict
-from typing import Dict, Iterable, List, Optional
+from collections.abc import Iterable
 
 import httpx
 
@@ -49,7 +49,7 @@ def estimated_quality(params_b: float) -> float:
     return 90.0
 
 
-def parse_params_b(repo_id: str) -> Optional[float]:
+def parse_params_b(repo_id: str) -> float | None:
     matches = _PARAMS_RE.findall(repo_id)
     if not matches:
         return None
@@ -59,7 +59,7 @@ def parse_params_b(repo_id: str) -> Optional[float]:
         return None
 
 
-def parse_quant(filename: str) -> Optional[str]:
+def parse_quant(filename: str) -> str | None:
     m = _QUANT_RE.search(filename)
     return m.group(1).upper() if m else None
 
@@ -84,8 +84,8 @@ class HuggingFaceDiscoverySource:
 
     def __init__(
         self,
-        exclude_families: Optional[Iterable[str]] = None,
-        client: Optional[httpx.Client] = None,
+        exclude_families: Iterable[str] | None = None,
+        client: httpx.Client | None = None,
         limit: int = 15,
         timeout: float = 8.0,
     ) -> None:
@@ -94,7 +94,7 @@ class HuggingFaceDiscoverySource:
         self._limit = limit
         self._timeout = timeout
 
-    def _list_repos(self, client: httpx.Client) -> List[dict]:
+    def _list_repos(self, client: httpx.Client) -> list[dict]:
         params = {
             "filter": ["gguf", "text-generation"],
             "sort": "downloads",
@@ -107,7 +107,7 @@ class HuggingFaceDiscoverySource:
             return []
         return resp.json()
 
-    def _repo_files(self, client: httpx.Client, repo: str) -> List[dict]:
+    def _repo_files(self, client: httpx.Client, repo: str) -> list[dict]:
         url = f"{HF_LIST}/{repo}/tree/main"
         resp = client.get(url, params={"recursive": "true"}, timeout=self._timeout)
         if resp.status_code != 200:
@@ -119,9 +119,9 @@ class HuggingFaceDiscoverySource:
         return any(kw in low for kw in self._exclude)
 
     @staticmethod
-    def _tags_meta(tags: List[str]) -> tuple[str, List[str]]:
+    def _tags_meta(tags: list[str]) -> tuple[str, list[str]]:
         license_ = "unknown"
-        languages: List[str] = []
+        languages: list[str] = []
         for t in tags:
             if t.startswith("license:"):
                 license_ = t.split(":", 1)[1]
@@ -129,7 +129,7 @@ class HuggingFaceDiscoverySource:
                 languages.append(t.split(":", 1)[1])
         return license_, (languages or ["en"])
 
-    def _variants_for_repo(self, client: httpx.Client, entry: dict) -> List[ModelVariant]:
+    def _variants_for_repo(self, client: httpx.Client, entry: dict) -> list[ModelVariant]:
         repo_id = entry.get("id") or entry.get("modelId")
         if not repo_id or self._is_excluded(repo_id):
             return []
@@ -143,7 +143,7 @@ class HuggingFaceDiscoverySource:
         family = _family_from_repo(repo_id)
 
         # Sum sizes per quant so split files (00001-of-00002) count once.
-        sizes: Dict[str, float] = defaultdict(float)
+        sizes: dict[str, float] = defaultdict(float)
         for f in self._repo_files(client, repo_id):
             path = f.get("path", "")
             if f.get("type") != "file" or not path.lower().endswith(".gguf"):
@@ -153,7 +153,7 @@ class HuggingFaceDiscoverySource:
                 continue
             sizes[quant] += (f.get("size") or 0) / 1e9
 
-        out: List[ModelVariant] = []
+        out: list[ModelVariant] = []
         for quant, size_gb in sizes.items():
             if size_gb <= 0:
                 continue
@@ -170,10 +170,10 @@ class HuggingFaceDiscoverySource:
             ))
         return out
 
-    def fetch(self) -> List[ModelVariant]:
+    def fetch(self) -> list[ModelVariant]:
         owns_client = self._client is None
         client = self._client or httpx.Client()
-        out: List[ModelVariant] = []
+        out: list[ModelVariant] = []
         try:
             try:
                 repos = self._list_repos(client)

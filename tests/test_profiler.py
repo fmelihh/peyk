@@ -1,7 +1,6 @@
-from peyk.models import Accelerator
-from peyk.profiler import accelerators, bandwidth, cpu, detect
+from peyk.models import Accelerator, HardwareProfile
+from peyk.profiler import accelerators, cpu, detect
 from peyk.profiler.bandwidth import estimate_bandwidth
-from peyk.models import HardwareProfile
 
 
 def test_detect_returns_profile():

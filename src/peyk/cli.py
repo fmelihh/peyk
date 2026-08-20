@@ -68,6 +68,10 @@ def _build_parser() -> argparse.ArgumentParser:
                      help="Discover trending GGUF models from HuggingFace (requires internet)")
     rec.add_argument("--no-cache", action="store_true",
                      help="Bypass the ~/.cache/peyk TTL cache for live sources")
+    rec.add_argument("--live-benchmarks", action="store_true",
+                     help="Overlay fresh benchmarks from PEYK_BENCHMARKS_URL (or --benchmarks-url)")
+    rec.add_argument("--benchmarks-url", metavar="URL",
+                     help="JSON endpoint for the live benchmark tier")
     rec.add_argument("--speed", choices=["usable", "fast"],
                      help="Hide models below a throughput floor (usable≥4, fast≥10 tok/s)")
     rec.add_argument("--vram-headroom", metavar="SIZE",
@@ -127,6 +131,11 @@ def _catalog_for(args, status: Console):
 
 def _cmd_recommend(args, console: Console, status: Console) -> int:
     languages = [l.strip() for l in args.languages.split(",") if l.strip()]
+    if args.live_benchmarks:
+        from . import benchmarks
+        n = benchmarks.load_live(url=args.benchmarks_url, use_cache=not args.no_cache)
+        status.print(f"[dim]Live benchmarks: {n} entries loaded.[/dim]" if n
+                     else "[yellow]Live benchmarks: none loaded (set PEYK_BENCHMARKS_URL).[/yellow]")
     candidates = _catalog_for(args, status)
     if args.discover:
         discovered = sum(1 for c in candidates for v in c.variants

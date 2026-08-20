@@ -20,8 +20,12 @@ from typing import Dict, List, Optional, Tuple
 
 from ..models import ModelVariant
 
-_MULTIPLIER = {"direct": 1.0, "interpolated": 0.90, "family": 0.80, "proxy": 0.70}
+_MULTIPLIER = {"live": 1.0, "direct": 1.0, "interpolated": 0.90,
+               "family": 0.80, "proxy": 0.70}
 _REPACKAGER_RATIO = 2.0
+
+# Live overlay: (family_lower, params_b) -> quality. Populated by activate_live().
+_LIVE: Dict[Tuple[str, float], dict] = {}
 
 
 @dataclass(frozen=True)
@@ -69,7 +73,36 @@ def _divergent(a: float, b: float) -> bool:
     return lo <= 0 or hi / lo > _REPACKAGER_RATIO
 
 
+def activate_live(entries: List[dict]) -> int:
+    """Load live benchmark entries as an overlay taking precedence over frozen."""
+    _LIVE.clear()
+    for e in entries:
+        _LIVE[(e["family"].lower(), float(e["params_b"]))] = e
+    return len(_LIVE)
+
+
+def load_live(url: Optional[str] = None, use_cache: bool = True) -> int:
+    """Fetch (cached) and activate the live tier. Returns entries loaded."""
+    from .. import cache
+    from . import live
+
+    target = live.resolve_url(url)
+    if not target:
+        return 0
+    key = f"benchmarks-live:{target}"
+    entries = cache.read_fresh(key, ttl=24 * 3600) if use_cache else None
+    if entries is None:
+        entries = live.fetch_live(url)
+        if entries and use_cache:
+            cache.write(key, entries)
+    return activate_live(entries or [])
+
+
 def evaluate(variant: ModelVariant) -> QualityEvidence:
+    live_hit = _LIVE.get((variant.family.lower(), variant.params_b))
+    if live_hit:
+        return QualityEvidence(float(live_hit["quality"]), "live",
+                               live_hit.get("source", "live"))
     entries = _BY_FAMILY.get(variant.family.lower())
     if entries:
         exact = next((e for e in entries if abs(e["params_b"] - variant.params_b) < 0.05), None)

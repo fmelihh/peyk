@@ -257,7 +257,8 @@ back to the curated catalog and still produces a report.
    Quality is **evidence-based**: a bundled benchmark snapshot
    (`peyk/benchmarks/`) is matched `direct` → `interpolated` → `family` → `proxy`
    and discounted by confidence, so unknown/repackaged models can't inherit a
-   score they haven't earned.
+   score they haven't earned. An optional **live tier** (`--live-benchmarks`
+   with `PEYK_BENCHMARKS_URL`) overlays fresh scores tagged `live`.
 5. `report.py` renders to terminal / JSON / Markdown.
 
 > **Note:** memory and speed figures are deliberately coarse heuristics; real

@@ -96,8 +96,8 @@ def _tier_table(rec: Recommendation) -> Table:
     return table
 
 
-_EVIDENCE_STYLE = {"direct": "green", "interpolated": "yellow",
-                   "family": "yellow", "proxy": "dim"}
+_EVIDENCE_STYLE = {"live": "bright_green", "direct": "green",
+                   "interpolated": "yellow", "family": "yellow", "proxy": "dim"}
 
 
 def _criterion_table(rec: Recommendation, criterion: str, n: int) -> Table:

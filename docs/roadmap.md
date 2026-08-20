@@ -126,6 +126,17 @@ Close the last whichllm task-profile gap.
 - Model resolution prefers a text model on ambiguous ties (explicit "-VL"/vision
   queries still resolve to the vision variant).
 
+### ✅ M11 — Live benchmark tier
+
+Complete the evidence-based-quality vision: frozen snapshots go stale, so add an
+opt-in live overlay.
+
+- `peyk/benchmarks/live.py` fetches a JSON benchmark table from
+  `PEYK_BENCHMARKS_URL` (or `--benchmarks-url`), cached 24h, fully best-effort.
+- `--live-benchmarks` overlays it on the frozen tier; matches are tagged `live`
+  (highest trust) and take precedence over `direct`.
+- Off by default with no hardcoded endpoint (honest — no fake "live" data).
+
 ## Out of scope (deliberate)
 
 - `peyk run` (download + interactive chat) — breaks the report-only identity.

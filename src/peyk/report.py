@@ -4,15 +4,18 @@ from __future__ import annotations
 
 import json
 
+from rich.box import ROUNDED, SIMPLE_HEAD
+from rich.columns import Columns
 from rich.console import Console
 from rich.panel import Panel
 from rich.table import Table
 from rich.text import Text
 
+from . import theme
 from .engine import CRITERIA, Recommendation
 from .models import FitTier, ScoredModel
 
-TIER_STYLE = {FitTier.FITS: "green", FitTier.TIGHT: "yellow", FitTier.NO_FIT: "red"}
+TIER_STYLE = {FitTier.FITS: theme.GREEN, FitTier.TIGHT: theme.YELLOW, FitTier.NO_FIT: theme.RED}
 SOURCE_LABEL = {
     "curated": "curated",
     "ollama": "ollama",
@@ -57,17 +60,26 @@ def _hardware_panel(hw) -> Panel:
         f"[bold]Usable memory pool (for sizing):[/bold] {hw.memory_pool_gb:.1f} GB  "
         f"| [bold]Bandwidth ({bw_tag}):[/bold] ~{hw.mem_bandwidth_gbs:.0f} GB/s"
     )
-    title = "Hardware Profile — SIMULATED" if hw.simulated else "Hardware Profile"
-    return Panel("\n".join(lines), title=title,
-                 border_style="magenta" if hw.simulated else "cyan")
+    title = ("🖥  Hardware [magenta]· SIMULATED[/magenta]" if hw.simulated
+             else "🖥  Hardware")
+    return Panel("\n".join(lines), title=title, title_align="left", box=ROUNDED,
+                 border_style="magenta" if hw.simulated else theme.BORDER,
+                 padding=(0, 2))
 
 
 def render_hardware(hw, console: Console | None = None) -> None:
     (console or Console()).print(_hardware_panel(hw))
 
 
+def _tier_label(tier: FitTier) -> Text:
+    return theme.dot(TIER_STYLE[tier]) + Text(" " + TIER_LABEL[tier], style=TIER_STYLE[tier])
+
+
 def _tier_table(rec: Recommendation) -> Table:
-    table = Table(title="Feasibility (using each model's best runnable quantization)")
+    table = Table(box=ROUNDED, border_style=theme.MUTED, header_style=f"bold {theme.ACCENT}",
+                  title="Feasibility · best runnable quantization per model",
+                  title_style=f"bold {theme.CYAN}", title_justify="left", expand=True,
+                  row_styles=["", "on grey11"])
     table.add_column("Status", no_wrap=True)
     table.add_column("Model", style="bold", overflow="fold", min_width=12)
     table.add_column("Params", justify="right")
@@ -83,13 +95,13 @@ def _tier_table(rec: Recommendation) -> Table:
             src = SOURCE_LABEL.get(v.source, v.source)
             src_text = Text(src, style="magenta" if v.source == "hf-discovered" else "dim")
             table.add_row(
-                Text(TIER_LABEL[tier], style=TIER_STYLE[tier]),
+                _tier_label(tier),
                 v.family,
                 f"{v.params_b:g}B",
                 v.quant,
                 f"{s.fit.mem_need_gb:.1f} GB",
                 f"~{s.fit.est_tokens_per_sec:.0f}",
-                f"{s.overall:.0f}",
+                Text(f"{s.overall:.0f}", style=f"bold {theme.ACCENT}"),
                 src_text,
             )
     return table
@@ -100,17 +112,21 @@ _EVIDENCE_STYLE = {"live": "bright_green", "direct": "green",
 
 
 def _criterion_table(rec: Recommendation, criterion: str, n: int) -> Table:
-    table = Table(title=f"Top by {CRITERION_LABEL.get(criterion, criterion)}")
-    table.add_column("#", justify="right")
+    icon = {"speed": "⚡", "quality": "★", "language": "🌐",
+            "context": "▤", "license": "⚖"}.get(criterion, "")
+    table = Table(box=SIMPLE_HEAD, header_style=f"bold {theme.ACCENT}", padding=(0, 1),
+                  title=f"{icon} {CRITERION_LABEL.get(criterion, criterion)}",
+                  title_style=f"bold {theme.CYAN}")
+    table.add_column("#", justify="right", style="dim")
     table.add_column("Model", style="bold")
-    table.add_column("Params", justify="right")
+    table.add_column("B", justify="right")
     table.add_column("Score", justify="right")
     show_conf = criterion == "quality"
     if show_conf:
-        table.add_column("Evidence", no_wrap=True)
+        table.add_column("Ev.", no_wrap=True)
     for i, s in enumerate(rec.top_by(criterion, n=n), 1):
-        row: list = [str(i), s.variant.family, f"{s.variant.params_b:g}B",
-                     f"{s.scores.get(criterion, 0):.0f}"]
+        row: list = [str(i), s.variant.family, f"{s.variant.params_b:g}",
+                     Text(f"{s.scores.get(criterion, 0):.0f}", style=f"bold {theme.ACCENT}")]
         if show_conf:
             row.append(Text(s.quality_evidence,
                             style=_EVIDENCE_STYLE.get(s.quality_evidence, "dim")))
@@ -134,21 +150,25 @@ def _disk_warning(rec: Recommendation) -> str | None:
 
 def render_terminal(rec: Recommendation, top: int = 5, console: Console | None = None) -> None:
     console = console or Console()
+    console.print()
+    console.print(theme.header())
+    console.print()
     console.print(_hardware_panel(rec.hw))
     console.print()
     console.print(_tier_table(rec))
     disk_warn = _disk_warning(rec)
     if disk_warn:
-        console.print(f"[yellow]{disk_warn}[/yellow]")
+        console.print(Text(disk_warn, style=theme.YELLOW))
     console.print()
-    for criterion in CRITERIA:
-        console.print(_criterion_table(rec, criterion, top))
+    console.rule(Text("Top models by criterion", style=f"bold {theme.CYAN}"),
+                 style=theme.MUTED)
+    console.print()
+    console.print(Columns([_criterion_table(rec, c, top) for c in CRITERIA],
+                          equal=False, expand=True, padding=(0, 2)))
     console.print(
-        "\n[dim]Note: memory and speed figures are rough estimates; real results "
-        "depend on the backend, quantization, and context length. Quality is an "
-        "evidence-tagged benchmark score — 'direct' from the snapshot, 'proxy' "
-        "estimated from parameters (e.g. HF-discovered models), discounted by "
-        "confidence.[/dim]"
+        "\n[dim]Estimates: memory & speed are approximate and depend on backend, "
+        "quantization, and context. Quality is an evidence-tagged benchmark score "
+        "(live › direct › interpolated › proxy), discounted by confidence.[/dim]"
     )
 
 
@@ -205,7 +225,8 @@ def render_plan(result, console: Console | None = None) -> None:
             f"[bold]Multi-GPU option:[/bold] {mg.count}x {mg.spec.name.upper()} "
             f"({mg.spec.vram_gb:g} GB each)"
         )
-    console.print(Panel("\n".join(lines), title="peyk plan", border_style="cyan"))
+    console.print(Panel("\n".join(lines), title="🔎  peyk plan", title_align="left",
+                        box=ROUNDED, border_style=theme.BORDER, padding=(0, 2)))
 
 
 def plan_to_json(result) -> str:
@@ -228,11 +249,11 @@ def render_snippet(data: dict, console: Console | None = None) -> None:
     console = console or Console()
     v = f"{data['model']} {data['params_b']:g}B {data['quant']}"
     console.print(Panel(f"[bold]{v}[/bold]  ([dim]{data['model_id']}[/dim])",
-                        title="peyk snippet", border_style="cyan"))
+                        title="⚡  peyk snippet", title_align="left", box=ROUNDED,
+                        border_style=theme.BORDER, padding=(0, 2)))
     for title, cmd in data["commands"].items():
-        console.print(f"[bold cyan]# {title}[/bold cyan]")
-        console.print(cmd)
-        console.print()
+        console.print(Panel(cmd, title=f"[bold {theme.CYAN}]{title}[/]", title_align="left",
+                            box=ROUNDED, border_style=theme.MUTED, padding=(0, 1)))
 
 
 def snippet_to_json(data: dict) -> str:

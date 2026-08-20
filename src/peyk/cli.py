@@ -110,7 +110,8 @@ def _resolve_hardware(args, status: Console):
             raise SystemExit(2) from None
     deep = getattr(args, "deep", False) or getattr(args, "sudo", False)
     if deep:
-        status.print("[dim]Running native hardware probe...[/dim]")
+        with status.status("[dim]Probing hardware…[/dim]", spinner="dots"):
+            return detect(deep=deep, allow_sudo=getattr(args, "sudo", False))
     return detect(deep=deep, allow_sudo=getattr(args, "sudo", False))
 
 
@@ -118,14 +119,16 @@ def _catalog_for(args, status: Console):
     offline = getattr(args, "offline", False) or not (
         getattr(args, "cross_check", False) or getattr(args, "discover", False)
     )
-    if not offline:
-        status.print("[dim]Fetching live data from sources (this may take a moment)...[/dim]")
-    return build_catalog(
+    kwargs = dict(
         offline=offline,
         cross_check=getattr(args, "cross_check", False),
         discover=getattr(args, "discover", False),
         use_cache=not getattr(args, "no_cache", False),
     )
+    if offline:
+        return build_catalog(**kwargs)
+    with status.status("[dim]Fetching from Ollama / HuggingFace…[/dim]", spinner="dots"):
+        return build_catalog(**kwargs)
 
 
 def _cmd_recommend(args, console: Console, status: Console) -> int:

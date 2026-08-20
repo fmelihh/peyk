@@ -1,53 +1,572 @@
 {
   "_comment": "Curated catalog of current local LLMs. file_size_gb are typical GGUF sizes. quality_score is a coarse capability proxy (0-100). Update periodically.",
-  "updated": "2026-08-20",
-  "version": "2026.08.20",
+  "updated": "2026-08-21",
+  "version": "2026.08.21",
   "variants": [
-    {"model_id": "llama3.2:1b", "family": "Llama 3.2", "params_b": 1, "quant": "Q4_K_M", "file_size_gb": 0.8, "context_max": 131072, "languages": ["en","de","fr","es","it","pt","hi","th"], "license": "llama3", "quality_score": 42},
-    {"model_id": "llama3.2:3b", "family": "Llama 3.2", "params_b": 3, "quant": "Q4_K_M", "file_size_gb": 2.0, "context_max": 131072, "languages": ["en","de","fr","es","it","pt","hi","th"], "license": "llama3", "quality_score": 58},
-    {"model_id": "llama3.1:8b", "family": "Llama 3.1", "params_b": 8, "quant": "Q4_K_M", "file_size_gb": 4.9, "context_max": 131072, "languages": ["en","de","fr","es","it","pt","hi","th"], "license": "llama3", "quality_score": 71},
-    {"model_id": "llama3.1:8b-q8", "family": "Llama 3.1", "params_b": 8, "quant": "Q8_0", "file_size_gb": 8.5, "context_max": 131072, "languages": ["en","de","fr","es","it","pt","hi","th"], "license": "llama3", "quality_score": 73},
-    {"model_id": "llama3.3:70b", "family": "Llama 3.3", "params_b": 70, "quant": "Q4_K_M", "file_size_gb": 43.0, "context_max": 131072, "languages": ["en","de","fr","es","it","pt","hi","th"], "license": "llama3", "quality_score": 90},
-
-    {"model_id": "qwen2.5:0.5b", "family": "Qwen2.5", "params_b": 0.5, "quant": "Q4_K_M", "file_size_gb": 0.4, "context_max": 32768, "languages": ["multi"], "license": "apache-2.0", "quality_score": 32},
-    {"model_id": "qwen2.5:3b", "family": "Qwen2.5", "params_b": 3, "quant": "Q4_K_M", "file_size_gb": 2.0, "context_max": 32768, "languages": ["multi"], "license": "apache-2.0", "quality_score": 60},
-    {"model_id": "qwen2.5:7b", "family": "Qwen2.5", "params_b": 7, "quant": "Q4_K_M", "file_size_gb": 4.7, "context_max": 32768, "languages": ["multi"], "license": "apache-2.0", "quality_score": 72},
-    {"model_id": "qwen2.5:14b", "family": "Qwen2.5", "params_b": 14, "quant": "Q4_K_M", "file_size_gb": 9.0, "context_max": 32768, "languages": ["multi"], "license": "apache-2.0", "quality_score": 79},
-    {"model_id": "qwen2.5:32b", "family": "Qwen2.5", "params_b": 32, "quant": "Q4_K_M", "file_size_gb": 20.0, "context_max": 32768, "languages": ["multi"], "license": "apache-2.0", "quality_score": 85},
-    {"model_id": "qwen2.5:72b", "family": "Qwen2.5", "params_b": 72, "quant": "Q4_K_M", "file_size_gb": 47.0, "context_max": 32768, "languages": ["multi"], "license": "qwen", "quality_score": 89},
-    {"model_id": "qwen2.5-coder:7b", "family": "Qwen2.5-Coder", "params_b": 7, "quant": "Q4_K_M", "file_size_gb": 4.7, "context_max": 32768, "languages": ["multi"], "license": "apache-2.0", "quality_score": 74},
-    {"model_id": "qwen2.5-coder:32b", "family": "Qwen2.5-Coder", "params_b": 32, "quant": "Q4_K_M", "file_size_gb": 20.0, "context_max": 32768, "languages": ["multi"], "license": "apache-2.0", "quality_score": 87},
-    {"model_id": "qwen3:8b", "family": "Qwen3", "params_b": 8, "quant": "Q4_K_M", "file_size_gb": 5.2, "context_max": 40960, "languages": ["multi"], "license": "apache-2.0", "quality_score": 76},
-    {"model_id": "qwen3:32b", "family": "Qwen3", "params_b": 32, "quant": "Q4_K_M", "file_size_gb": 20.0, "context_max": 40960, "languages": ["multi"], "license": "apache-2.0", "quality_score": 88},
-
-    {"model_id": "gemma2:2b", "family": "Gemma 2", "params_b": 2, "quant": "Q4_K_M", "file_size_gb": 1.6, "context_max": 8192, "languages": ["multi"], "license": "gemma", "quality_score": 52},
-    {"model_id": "gemma2:9b", "family": "Gemma 2", "params_b": 9, "quant": "Q4_K_M", "file_size_gb": 5.8, "context_max": 8192, "languages": ["multi"], "license": "gemma", "quality_score": 73},
-    {"model_id": "gemma2:27b", "family": "Gemma 2", "params_b": 27, "quant": "Q4_K_M", "file_size_gb": 16.6, "context_max": 8192, "languages": ["multi"], "license": "gemma", "quality_score": 83},
-    {"model_id": "gemma3:4b", "family": "Gemma 3", "params_b": 4, "quant": "Q4_K_M", "file_size_gb": 3.3, "context_max": 131072, "languages": ["multi"], "license": "gemma", "quality_score": 66, "modality": "vision"},
-    {"model_id": "gemma3:12b", "family": "Gemma 3", "params_b": 12, "quant": "Q4_K_M", "file_size_gb": 8.1, "context_max": 131072, "languages": ["multi"], "license": "gemma", "quality_score": 80, "modality": "vision"},
-    {"model_id": "gemma3:27b", "family": "Gemma 3", "params_b": 27, "quant": "Q4_K_M", "file_size_gb": 17.0, "context_max": 131072, "languages": ["multi"], "license": "gemma", "quality_score": 85, "modality": "vision"},
-
-    {"model_id": "qwen2.5vl:7b", "family": "Qwen2.5-VL", "params_b": 7, "quant": "Q4_K_M", "file_size_gb": 5.0, "context_max": 32768, "languages": ["multi"], "license": "apache-2.0", "quality_score": 74, "modality": "vision"},
-    {"model_id": "qwen2.5vl:72b", "family": "Qwen2.5-VL", "params_b": 72, "quant": "Q4_K_M", "file_size_gb": 47.0, "context_max": 32768, "languages": ["multi"], "license": "qwen", "quality_score": 88, "modality": "vision"},
-    {"model_id": "llama3.2-vision:11b", "family": "Llama 3.2 Vision", "params_b": 11, "quant": "Q4_K_M", "file_size_gb": 7.9, "context_max": 131072, "languages": ["en","de","fr","es","it","pt","hi","th"], "license": "llama3", "quality_score": 72, "modality": "vision"},
-    {"model_id": "llama3.2-vision:90b", "family": "Llama 3.2 Vision", "params_b": 90, "quant": "Q4_K_M", "file_size_gb": 55.0, "context_max": 131072, "languages": ["en","de","fr","es","it","pt","hi","th"], "license": "llama3", "quality_score": 87, "modality": "vision"},
-
-    {"model_id": "phi4:14b", "family": "Phi-4", "params_b": 14, "quant": "Q4_K_M", "file_size_gb": 9.1, "context_max": 16384, "languages": ["en"], "license": "mit", "quality_score": 80},
-    {"model_id": "phi3.5:3.8b", "family": "Phi-3.5-mini", "params_b": 3.8, "quant": "Q4_K_M", "file_size_gb": 2.4, "context_max": 131072, "languages": ["en"], "license": "mit", "quality_score": 63},
-
-    {"model_id": "mistral:7b", "family": "Mistral", "params_b": 7, "quant": "Q4_K_M", "file_size_gb": 4.4, "context_max": 32768, "languages": ["en","fr","de","es","it"], "license": "apache-2.0", "quality_score": 68},
-    {"model_id": "mistral-small:24b", "family": "Mistral Small 3", "params_b": 24, "quant": "Q4_K_M", "file_size_gb": 14.3, "context_max": 32768, "languages": ["en","fr","de","es","it","pt","nl"], "license": "apache-2.0", "quality_score": 84},
-    {"model_id": "mixtral:8x7b", "family": "Mixtral", "params_b": 47, "active_params_b": 13, "quant": "Q4_K_M", "file_size_gb": 26.4, "context_max": 32768, "languages": ["en","fr","de","es","it"], "license": "apache-2.0", "quality_score": 82},
-
-    {"model_id": "deepseek-r1:7b", "family": "DeepSeek-R1-Distill", "params_b": 7, "quant": "Q4_K_M", "file_size_gb": 4.7, "context_max": 131072, "languages": ["multi"], "license": "mit", "quality_score": 74},
-    {"model_id": "deepseek-r1:8b", "family": "DeepSeek-R1-Distill", "params_b": 8, "quant": "Q4_K_M", "file_size_gb": 4.9, "context_max": 131072, "languages": ["multi"], "license": "mit", "quality_score": 75},
-    {"model_id": "deepseek-r1:32b", "family": "DeepSeek-R1-Distill", "params_b": 32, "quant": "Q4_K_M", "file_size_gb": 20.0, "context_max": 131072, "languages": ["multi"], "license": "mit", "quality_score": 87},
-    {"model_id": "deepseek-r1:70b", "family": "DeepSeek-R1-Distill", "params_b": 70, "quant": "Q4_K_M", "file_size_gb": 43.0, "context_max": 131072, "languages": ["multi"], "license": "mit", "quality_score": 90},
-
-    {"model_id": "aya-expanse:8b", "family": "Aya Expanse", "params_b": 8, "quant": "Q4_K_M", "file_size_gb": 5.1, "context_max": 8192, "languages": ["multi"], "license": "cc-by-nc-4.0", "quality_score": 70},
-    {"model_id": "aya-expanse:32b", "family": "Aya Expanse", "params_b": 32, "quant": "Q4_K_M", "file_size_gb": 20.0, "context_max": 131072, "languages": ["multi"], "license": "cc-by-nc-4.0", "quality_score": 84},
-
-    {"model_id": "nomic-embed-text", "family": "Nomic Embed", "params_b": 0.14, "quant": "F16", "file_size_gb": 0.3, "context_max": 8192, "languages": ["multi"], "license": "apache-2.0", "quality_score": 60},
-    {"model_id": "mxbai-embed-large", "family": "mxbai Embed", "params_b": 0.33, "quant": "F16", "file_size_gb": 0.7, "context_max": 512, "languages": ["en"], "license": "apache-2.0", "quality_score": 62}
+    {
+      "model_id": "llama3.2:1b",
+      "family": "Llama 3.2",
+      "params_b": 1,
+      "quant": "Q4_K_M",
+      "file_size_gb": 1.32,
+      "context_max": 131072,
+      "languages": [
+        "en",
+        "de",
+        "fr",
+        "es",
+        "it",
+        "pt",
+        "hi",
+        "th"
+      ],
+      "license": "llama3",
+      "quality_score": 42
+    },
+    {
+      "model_id": "llama3.2:3b",
+      "family": "Llama 3.2",
+      "params_b": 3,
+      "quant": "Q4_K_M",
+      "file_size_gb": 2.0,
+      "context_max": 131072,
+      "languages": [
+        "en",
+        "de",
+        "fr",
+        "es",
+        "it",
+        "pt",
+        "hi",
+        "th"
+      ],
+      "license": "llama3",
+      "quality_score": 58
+    },
+    {
+      "model_id": "llama3.1:8b",
+      "family": "Llama 3.1",
+      "params_b": 8,
+      "quant": "Q4_K_M",
+      "file_size_gb": 4.9,
+      "context_max": 131072,
+      "languages": [
+        "en",
+        "de",
+        "fr",
+        "es",
+        "it",
+        "pt",
+        "hi",
+        "th"
+      ],
+      "license": "llama3",
+      "quality_score": 71
+    },
+    {
+      "model_id": "llama3.1:8b-q8",
+      "family": "Llama 3.1",
+      "params_b": 8,
+      "quant": "Q8_0",
+      "file_size_gb": 8.5,
+      "context_max": 131072,
+      "languages": [
+        "en",
+        "de",
+        "fr",
+        "es",
+        "it",
+        "pt",
+        "hi",
+        "th"
+      ],
+      "license": "llama3",
+      "quality_score": 73
+    },
+    {
+      "model_id": "llama3.3:70b",
+      "family": "Llama 3.3",
+      "params_b": 70,
+      "quant": "Q4_K_M",
+      "file_size_gb": 42.52,
+      "context_max": 131072,
+      "languages": [
+        "en",
+        "de",
+        "fr",
+        "es",
+        "it",
+        "pt",
+        "hi",
+        "th"
+      ],
+      "license": "llama3",
+      "quality_score": 90
+    },
+    {
+      "model_id": "qwen2.5:0.5b",
+      "family": "Qwen2.5",
+      "params_b": 0.5,
+      "quant": "Q4_K_M",
+      "file_size_gb": 0.4,
+      "context_max": 32768,
+      "languages": [
+        "multi"
+      ],
+      "license": "apache-2.0",
+      "quality_score": 32
+    },
+    {
+      "model_id": "qwen2.5:3b",
+      "family": "Qwen2.5",
+      "params_b": 3,
+      "quant": "Q4_K_M",
+      "file_size_gb": 1.93,
+      "context_max": 32768,
+      "languages": [
+        "multi"
+      ],
+      "license": "apache-2.0",
+      "quality_score": 60
+    },
+    {
+      "model_id": "qwen2.5:7b",
+      "family": "Qwen2.5",
+      "params_b": 7,
+      "quant": "Q4_K_M",
+      "file_size_gb": 4.7,
+      "context_max": 32768,
+      "languages": [
+        "multi"
+      ],
+      "license": "apache-2.0",
+      "quality_score": 72
+    },
+    {
+      "model_id": "qwen2.5:14b",
+      "family": "Qwen2.5",
+      "params_b": 14,
+      "quant": "Q4_K_M",
+      "file_size_gb": 9.0,
+      "context_max": 32768,
+      "languages": [
+        "multi"
+      ],
+      "license": "apache-2.0",
+      "quality_score": 79
+    },
+    {
+      "model_id": "qwen2.5:32b",
+      "family": "Qwen2.5",
+      "params_b": 32,
+      "quant": "Q4_K_M",
+      "file_size_gb": 19.85,
+      "context_max": 32768,
+      "languages": [
+        "multi"
+      ],
+      "license": "apache-2.0",
+      "quality_score": 85
+    },
+    {
+      "model_id": "qwen2.5:72b",
+      "family": "Qwen2.5",
+      "params_b": 72,
+      "quant": "Q4_K_M",
+      "file_size_gb": 47.42,
+      "context_max": 32768,
+      "languages": [
+        "multi"
+      ],
+      "license": "qwen",
+      "quality_score": 89
+    },
+    {
+      "model_id": "qwen2.5-coder:7b",
+      "family": "Qwen2.5-Coder",
+      "params_b": 7,
+      "quant": "Q4_K_M",
+      "file_size_gb": 4.7,
+      "context_max": 32768,
+      "languages": [
+        "multi"
+      ],
+      "license": "apache-2.0",
+      "quality_score": 74
+    },
+    {
+      "model_id": "qwen2.5-coder:32b",
+      "family": "Qwen2.5-Coder",
+      "params_b": 32,
+      "quant": "Q4_K_M",
+      "file_size_gb": 19.85,
+      "context_max": 32768,
+      "languages": [
+        "multi"
+      ],
+      "license": "apache-2.0",
+      "quality_score": 87
+    },
+    {
+      "model_id": "qwen3:8b",
+      "family": "Qwen3",
+      "params_b": 8,
+      "quant": "Q4_K_M",
+      "file_size_gb": 5.2,
+      "context_max": 40960,
+      "languages": [
+        "multi"
+      ],
+      "license": "apache-2.0",
+      "quality_score": 76
+    },
+    {
+      "model_id": "qwen3:32b",
+      "family": "Qwen3",
+      "params_b": 32,
+      "quant": "Q4_K_M",
+      "file_size_gb": 20.2,
+      "context_max": 40960,
+      "languages": [
+        "multi"
+      ],
+      "license": "apache-2.0",
+      "quality_score": 88
+    },
+    {
+      "model_id": "gemma2:2b",
+      "family": "Gemma 2",
+      "params_b": 2,
+      "quant": "Q4_K_M",
+      "file_size_gb": 1.6,
+      "context_max": 8192,
+      "languages": [
+        "multi"
+      ],
+      "license": "gemma",
+      "quality_score": 52
+    },
+    {
+      "model_id": "gemma2:9b",
+      "family": "Gemma 2",
+      "params_b": 9,
+      "quant": "Q4_K_M",
+      "file_size_gb": 5.44,
+      "context_max": 8192,
+      "languages": [
+        "multi"
+      ],
+      "license": "gemma",
+      "quality_score": 73
+    },
+    {
+      "model_id": "gemma2:27b",
+      "family": "Gemma 2",
+      "params_b": 27,
+      "quant": "Q4_K_M",
+      "file_size_gb": 15.63,
+      "context_max": 8192,
+      "languages": [
+        "multi"
+      ],
+      "license": "gemma",
+      "quality_score": 83
+    },
+    {
+      "model_id": "gemma3:4b",
+      "family": "Gemma 3",
+      "params_b": 4,
+      "quant": "Q4_K_M",
+      "file_size_gb": 3.3,
+      "context_max": 131072,
+      "languages": [
+        "multi"
+      ],
+      "license": "gemma",
+      "quality_score": 66,
+      "modality": "vision"
+    },
+    {
+      "model_id": "gemma3:12b",
+      "family": "Gemma 3",
+      "params_b": 12,
+      "quant": "Q4_K_M",
+      "file_size_gb": 8.15,
+      "context_max": 131072,
+      "languages": [
+        "multi"
+      ],
+      "license": "gemma",
+      "quality_score": 80,
+      "modality": "vision"
+    },
+    {
+      "model_id": "gemma3:27b",
+      "family": "Gemma 3",
+      "params_b": 27,
+      "quant": "Q4_K_M",
+      "file_size_gb": 17.4,
+      "context_max": 131072,
+      "languages": [
+        "multi"
+      ],
+      "license": "gemma",
+      "quality_score": 85,
+      "modality": "vision"
+    },
+    {
+      "model_id": "qwen2.5vl:7b",
+      "family": "Qwen2.5-VL",
+      "params_b": 7,
+      "quant": "Q4_K_M",
+      "file_size_gb": 5.97,
+      "context_max": 32768,
+      "languages": [
+        "multi"
+      ],
+      "license": "apache-2.0",
+      "quality_score": 74,
+      "modality": "vision"
+    },
+    {
+      "model_id": "qwen2.5vl:72b",
+      "family": "Qwen2.5-VL",
+      "params_b": 72,
+      "quant": "Q4_K_M",
+      "file_size_gb": 48.71,
+      "context_max": 32768,
+      "languages": [
+        "multi"
+      ],
+      "license": "qwen",
+      "quality_score": 88,
+      "modality": "vision"
+    },
+    {
+      "model_id": "llama3.2-vision:11b",
+      "family": "Llama 3.2 Vision",
+      "params_b": 11,
+      "quant": "Q4_K_M",
+      "file_size_gb": 7.82,
+      "context_max": 131072,
+      "languages": [
+        "en",
+        "de",
+        "fr",
+        "es",
+        "it",
+        "pt",
+        "hi",
+        "th"
+      ],
+      "license": "llama3",
+      "quality_score": 72,
+      "modality": "vision"
+    },
+    {
+      "model_id": "llama3.2-vision:90b",
+      "family": "Llama 3.2 Vision",
+      "params_b": 90,
+      "quant": "Q4_K_M",
+      "file_size_gb": 54.62,
+      "context_max": 131072,
+      "languages": [
+        "en",
+        "de",
+        "fr",
+        "es",
+        "it",
+        "pt",
+        "hi",
+        "th"
+      ],
+      "license": "llama3",
+      "quality_score": 87,
+      "modality": "vision"
+    },
+    {
+      "model_id": "phi4:14b",
+      "family": "Phi-4",
+      "params_b": 14,
+      "quant": "Q4_K_M",
+      "file_size_gb": 9.1,
+      "context_max": 16384,
+      "languages": [
+        "en"
+      ],
+      "license": "mit",
+      "quality_score": 80
+    },
+    {
+      "model_id": "phi3.5:3.8b",
+      "family": "Phi-3.5-mini",
+      "params_b": 3.8,
+      "quant": "Q4_K_M",
+      "file_size_gb": 2.18,
+      "context_max": 131072,
+      "languages": [
+        "en"
+      ],
+      "license": "mit",
+      "quality_score": 63
+    },
+    {
+      "model_id": "mistral:7b",
+      "family": "Mistral",
+      "params_b": 7,
+      "quant": "Q4_K_M",
+      "file_size_gb": 4.4,
+      "context_max": 32768,
+      "languages": [
+        "en",
+        "fr",
+        "de",
+        "es",
+        "it"
+      ],
+      "license": "apache-2.0",
+      "quality_score": 68
+    },
+    {
+      "model_id": "mistral-small:24b",
+      "family": "Mistral Small 3",
+      "params_b": 24,
+      "quant": "Q4_K_M",
+      "file_size_gb": 14.3,
+      "context_max": 32768,
+      "languages": [
+        "en",
+        "fr",
+        "de",
+        "es",
+        "it",
+        "pt",
+        "nl"
+      ],
+      "license": "apache-2.0",
+      "quality_score": 84
+    },
+    {
+      "model_id": "mixtral:8x7b",
+      "family": "Mixtral",
+      "params_b": 47,
+      "active_params_b": 13,
+      "quant": "Q4_K_M",
+      "file_size_gb": 26.4,
+      "context_max": 32768,
+      "languages": [
+        "en",
+        "fr",
+        "de",
+        "es",
+        "it"
+      ],
+      "license": "apache-2.0",
+      "quality_score": 82
+    },
+    {
+      "model_id": "deepseek-r1:7b",
+      "family": "DeepSeek-R1-Distill",
+      "params_b": 7,
+      "quant": "Q4_K_M",
+      "file_size_gb": 4.7,
+      "context_max": 131072,
+      "languages": [
+        "multi"
+      ],
+      "license": "mit",
+      "quality_score": 74
+    },
+    {
+      "model_id": "deepseek-r1:8b",
+      "family": "DeepSeek-R1-Distill",
+      "params_b": 8,
+      "quant": "Q4_K_M",
+      "file_size_gb": 5.23,
+      "context_max": 131072,
+      "languages": [
+        "multi"
+      ],
+      "license": "mit",
+      "quality_score": 75
+    },
+    {
+      "model_id": "deepseek-r1:32b",
+      "family": "DeepSeek-R1-Distill",
+      "params_b": 32,
+      "quant": "Q4_K_M",
+      "file_size_gb": 19.85,
+      "context_max": 131072,
+      "languages": [
+        "multi"
+      ],
+      "license": "mit",
+      "quality_score": 87
+    },
+    {
+      "model_id": "deepseek-r1:70b",
+      "family": "DeepSeek-R1-Distill",
+      "params_b": 70,
+      "quant": "Q4_K_M",
+      "file_size_gb": 42.52,
+      "context_max": 131072,
+      "languages": [
+        "multi"
+      ],
+      "license": "mit",
+      "quality_score": 90
+    },
+    {
+      "model_id": "aya-expanse:8b",
+      "family": "Aya Expanse",
+      "params_b": 8,
+      "quant": "Q4_K_M",
+      "file_size_gb": 5.1,
+      "context_max": 8192,
+      "languages": [
+        "multi"
+      ],
+      "license": "cc-by-nc-4.0",
+      "quality_score": 70
+    },
+    {
+      "model_id": "aya-expanse:32b",
+      "family": "Aya Expanse",
+      "params_b": 32,
+      "quant": "Q4_K_M",
+      "file_size_gb": 19.8,
+      "context_max": 131072,
+      "languages": [
+        "multi"
+      ],
+      "license": "cc-by-nc-4.0",
+      "quality_score": 84
+    },
+    {
+      "model_id": "nomic-embed-text",
+      "family": "Nomic Embed",
+      "params_b": 0.14,
+      "quant": "F16",
+      "file_size_gb": 0.3,
+      "context_max": 8192,
+      "languages": [
+        "multi"
+      ],
+      "license": "apache-2.0",
+      "quality_score": 60
+    },
+    {
+      "model_id": "mxbai-embed-large",
+      "family": "mxbai Embed",
+      "params_b": 0.33,
+      "quant": "F16",
+      "file_size_gb": 0.7,
+      "context_max": 512,
+      "languages": [
+        "en"
+      ],
+      "license": "apache-2.0",
+      "quality_score": 62
+    }
   ]
 }

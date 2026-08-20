@@ -1,0 +1,43 @@
+name: Refresh catalog
+
+# Keeps the bundled catalog fresh: weekly, re-verify file sizes against the
+# Ollama registry and bump the `updated` stamp, opening a rolling PR for review.
+on:
+  schedule:
+    - cron: "0 6 * * 1"   # Mondays 06:00 UTC
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install -e .
+      - name: Refresh catalog from registries
+        run: python scripts/refresh_catalog.py
+      - name: Run tests against the refreshed catalog
+        run: |
+          pip install -e ".[dev]"
+          pytest -q
+      - name: Open / update pull request
+        uses: peter-evans/create-pull-request@v6
+        with:
+          branch: chore/refresh-catalog
+          title: "chore: weekly catalog refresh"
+          commit-message: "chore: refresh catalog sizes + freshness date"
+          body: |
+            Automated weekly catalog refresh.
+
+            - `file_size_gb` re-verified against the Ollama registry
+            - `updated` / `version` bumped to today
+
+            New models and quality scores are still curated by hand — this only
+            keeps sizes and the freshness stamp current.
+          labels: catalog

@@ -296,6 +296,9 @@ peyk guards against that:
   release: `peyk --catalog-url https://…/catalog.json` (or `PEYK_CATALOG_URL`),
   cached locally with offline fallback.
 - `--cross-check` / `--discover` refresh sizes and surface new models live.
+- A **weekly GitHub Action** (`scripts/refresh_catalog.py`) re-verifies file sizes
+  against the Ollama registry and opens a rolling PR, so the bundled catalog stays
+  current without manual effort (new models / quality are still curated by hand).
 
 ## Accuracy & calibration
 

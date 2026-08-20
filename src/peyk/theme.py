@@ -63,3 +63,21 @@ def header(subtitle: str = "know what runs — before you download") -> Panel:
 
 def dot(color: str) -> Text:
     return Text("●", style=color)
+
+
+# Speed thresholds (tok/s) -> colour, à la a traffic light.
+def speed_color(tps: float) -> str:
+    if tps < 4:
+        return RED
+    if tps < 10:
+        return YELLOW
+    if tps < 30:
+        return GREEN
+    return "#22c55e"  # brisk
+
+
+ACCEL_ICON = {"APPLE": "", "NVIDIA": "▲", "AMD": "△", "NONE": "▫"}
+
+
+def accel_icon(accelerator: str) -> str:
+    return ACCEL_ICON.get(accelerator, "▫")

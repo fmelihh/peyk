@@ -33,36 +33,42 @@ CRITERION_LABEL = {
 
 
 def _hardware_panel(hw) -> Panel:
-    accel = hw.accelerator.value + (f" ({hw.accelerator_name})" if hw.accelerator_name else "")
-    cpu_desc = f" {hw.cpu_model}" if hw.cpu_model else ""
-    lines = [
-        f"[bold]OS/Arch:[/bold] {hw.os} / {hw.arch}",
-        f"[bold]CPU:[/bold]{cpu_desc} — {hw.cpu_cores_physical} cores "
-        f"({hw.cpu_cores_logical} threads)  flags: {', '.join(hw.cpu_flags) or '-'}",
-        f"[bold]RAM:[/bold] {hw.ram_available_gb:.1f} / {hw.ram_total_gb:.1f} GB free",
+    accel = (theme.accel_icon(hw.accelerator.value) + " " + hw.accelerator.value
+             + (f" ({hw.accelerator_name})" if hw.accelerator_name else "")).strip()
+    cpu = (f"{hw.cpu_model} · " if hw.cpu_model else "") + \
+          f"{hw.cpu_cores_physical} cores / {hw.cpu_cores_logical} threads"
+    bw_tag = {"measured": "measured", "simulated": "sim"}.get(hw.mem_bandwidth_source, "est.")
+
+    facts: list[tuple[str, str]] = [
+        ("OS / Arch", f"{hw.os} / {hw.arch}"),
+        ("CPU", cpu),
+        ("RAM", f"{hw.ram_available_gb:.1f} / {hw.ram_total_gb:.1f} GB free"),
     ]
     if hw.disk_free_gb:
-        lines.append(f"[bold]Disk free:[/bold] {hw.disk_free_gb:.1f} GB (for downloads)")
+        facts.append(("Disk free", f"{hw.disk_free_gb:.1f} GB"))
     if hw.ram_type or hw.ram_speed_mtps:
-        ram_spec = " ".join(
-            p for p in (hw.ram_type, f"{hw.ram_speed_mtps} MT/s" if hw.ram_speed_mtps else None,
-                        f"x{hw.ram_channels} DIMM" if hw.ram_channels else None) if p
-        )
-        lines.append(f"[bold]RAM spec:[/bold] {ram_spec}")
-    lines.append(f"[bold]Accelerator:[/bold] {accel}")
+        spec = " ".join(p for p in (
+            hw.ram_type, f"{hw.ram_speed_mtps} MT/s" if hw.ram_speed_mtps else None,
+            f"x{hw.ram_channels} DIMM" if hw.ram_channels else None) if p)
+        facts.append(("RAM spec", spec))
+    facts.append(("Accelerator", accel))
     if hw.vram_total_gb:
-        gpu_note = f" (across {hw.gpu_count} GPUs)" if hw.gpu_count > 1 else ""
-        lines.append(f"[bold]VRAM:[/bold] {hw.vram_total_gb:.1f} GB{gpu_note}")
+        note = f"  (across {hw.gpu_count} GPUs)" if hw.gpu_count > 1 else ""
+        facts.append(("VRAM", f"{hw.vram_total_gb:.1f} GB{note}"))
     if hw.unified_memory:
-        lines.append("[bold]Memory:[/bold] unified (shared RAM/VRAM pool)")
-    bw_tag = {"measured": "measured", "simulated": "sim"}.get(hw.mem_bandwidth_source, "est.")
-    lines.append(
-        f"[bold]Usable memory pool (for sizing):[/bold] {hw.memory_pool_gb:.1f} GB  "
-        f"| [bold]Bandwidth ({bw_tag}):[/bold] ~{hw.mem_bandwidth_gbs:.0f} GB/s"
-    )
+        facts.append(("Memory", "unified (shared RAM/VRAM)"))
+    facts.append(("Memory pool", f"{hw.memory_pool_gb:.1f} GB  ·  ~{hw.mem_bandwidth_gbs:.0f} GB/s "
+                                  f"({bw_tag})"))
+
+    grid = Table.grid(padding=(0, 2))
+    grid.add_column(justify="right", style=theme.MUTED, no_wrap=True)
+    grid.add_column(style="default")
+    for label, value in facts:
+        grid.add_row(label, value)
+
     title = ("🖥  Hardware [magenta]· SIMULATED[/magenta]" if hw.simulated
              else "🖥  Hardware")
-    return Panel("\n".join(lines), title=title, title_align="left", box=ROUNDED,
+    return Panel(grid, title=title, title_align="left", box=ROUNDED,
                  border_style="magenta" if hw.simulated else theme.BORDER,
                  padding=(0, 2))
 
@@ -100,7 +106,8 @@ def _tier_table(rec: Recommendation) -> Table:
                 f"{v.params_b:g}B",
                 v.quant,
                 f"{s.fit.mem_need_gb:.1f} GB",
-                f"~{s.fit.est_tokens_per_sec:.0f}",
+                Text(f"~{s.fit.est_tokens_per_sec:.0f}",
+                     style=theme.speed_color(s.fit.est_tokens_per_sec)),
                 Text(f"{s.overall:.0f}", style=f"bold {theme.ACCENT}"),
                 src_text,
             )
@@ -148,6 +155,29 @@ def _disk_warning(rec: Recommendation) -> str | None:
             f"e.g. {biggest.variant.family} needs {biggest.variant.file_size_gb:.1f} GB to download.")
 
 
+def _best_pick_panel(rec: Recommendation) -> Panel | None:
+    top = rec.overall_top(1)
+    if not top:
+        return None
+    s = top[0]
+    v = s.variant
+    body = (theme.gradient_text(f"{v.family} {v.params_b:g}B") +
+            Text(f"  {v.quant}", style=theme.MUTED) +
+            Text(f"   ~{s.fit.est_tokens_per_sec:.0f} tok/s",
+                 style=theme.speed_color(s.fit.est_tokens_per_sec)) +
+            Text(f"   score {s.overall:.0f}", style=f"bold {theme.ACCENT}") +
+            Text(f"   {SOURCE_LABEL.get(v.source, v.source)}", style=theme.MUTED))
+    return Panel(body, title="★ Best pick", title_align="left", box=ROUNDED,
+                border_style=theme.CYAN, padding=(0, 2))
+
+
+def _tier_legend() -> Text:
+    parts = Text("  ")
+    for tier in (FitTier.FITS, FitTier.TIGHT, FitTier.NO_FIT):
+        parts += theme.dot(TIER_STYLE[tier]) + Text(f" {TIER_LABEL[tier]}   ", style=theme.MUTED)
+    return parts
+
+
 def render_terminal(rec: Recommendation, top: int = 5, console: Console | None = None) -> None:
     console = console or Console()
     console.print()
@@ -155,7 +185,12 @@ def render_terminal(rec: Recommendation, top: int = 5, console: Console | None =
     console.print()
     console.print(_hardware_panel(rec.hw))
     console.print()
+    best = _best_pick_panel(rec)
+    if best:
+        console.print(best)
+        console.print()
     console.print(_tier_table(rec))
+    console.print(_tier_legend())
     disk_warn = _disk_warning(rec)
     if disk_warn:
         console.print(Text(disk_warn, style=theme.YELLOW))

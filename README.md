@@ -276,8 +276,20 @@ quality proxy). `--cross-check` will verify the sizes against live registries.
 
 ```bash
 pip install -e ".[dev]"
-pytest -q
+pytest -q          # tests
+ruff check .       # lint
+mypy src/peyk      # types
 ```
+
+## Star History
+
+<a href="https://star-history.com/#fmelihh/peyk&Date">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=fmelihh/peyk&type=Date&theme=dark" />
+    <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=fmelihh/peyk&type=Date" />
+    <img alt="Star History Chart" src="https://api.star-history.com/svg?repos=fmelihh/peyk&type=Date" width="600" />
+  </picture>
+</a>
 
 ## License
 

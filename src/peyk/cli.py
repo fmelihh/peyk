@@ -36,6 +36,11 @@ def _parse_size_gb(text: str | None) -> float | None:
     return val / 1024 if unit in ("mb", "m") else val
 
 
+def _add_common_flags(p: argparse.ArgumentParser) -> None:
+    p.add_argument("--plain", action="store_true",
+                   help="Disable colours/emoji (also honours NO_COLOR)")
+
+
 def _add_hardware_flags(p: argparse.ArgumentParser) -> None:
     p.add_argument("--gpu", metavar="NAME",
                    help='Simulate a GPU, e.g. "RTX 4090", "2x RTX 5090", "A100 80GB"')
@@ -80,22 +85,26 @@ def _build_parser() -> argparse.ArgumentParser:
     rec.add_argument("--json", action="store_true", help="Emit machine-readable JSON")
     rec.add_argument("--markdown", metavar="FILE", help="Write the report to a Markdown file")
     _add_hardware_flags(rec)
+    _add_common_flags(rec)
 
     hw = sub.add_parser("hardware", help="Show the detected (or simulated) hardware profile")
     hw.add_argument("--json", action="store_true", help="Emit machine-readable JSON")
     _add_hardware_flags(hw)
+    _add_common_flags(hw)
 
     pl = sub.add_parser("plan", help="Reverse lookup: what hardware runs a given model")
     pl.add_argument("model", help='Model to plan for, e.g. "llama 3.3 70b"')
     pl.add_argument("--context", type=int, default=8192, help="Target context length in tokens")
     pl.add_argument("--quant", default="Q4_K_M", help="Preferred quantization")
     pl.add_argument("--json", action="store_true", help="Emit machine-readable JSON")
+    _add_common_flags(pl)
 
     sn = sub.add_parser("snippet", help="Print ready-to-run commands for a model (no download)")
     sn.add_argument("model", help='Model to run, e.g. "qwen2.5 7b"')
     sn.add_argument("--context", type=int, default=8192, help="Target context length in tokens")
     sn.add_argument("--json", action="store_true", help="Emit machine-readable JSON")
     _add_hardware_flags(sn)
+    _add_common_flags(sn)
 
     return p
 
@@ -231,8 +240,9 @@ def main(argv: list[str] | None = None) -> int:
         argv = ["recommend"] + argv
 
     args = _build_parser().parse_args(argv)
-    console = Console()
-    status = Console(stderr=True)
+    plain = getattr(args, "plain", False)
+    console = Console(no_color=plain, emoji=not plain)
+    status = Console(stderr=True, no_color=plain, emoji=not plain)
     return _DISPATCH[args.command](args, console, status)
 
 

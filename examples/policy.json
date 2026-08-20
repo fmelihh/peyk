@@ -1,0 +1,7 @@
+{
+  "max_params_b": 32,
+  "allow_licenses": ["apache-2.0", "mit"],
+  "require_languages": ["tr", "en"],
+  "min_quality": 60,
+  "require_fit": true
+}

@@ -3,7 +3,7 @@
 </p>
 
 <p align="center">
-  <b>Right-size local LLMs to your hardware.</b>
+  <b>Offline, auditable, hardware-measured model selection for local LLMs.</b>
 </p>
 
 <p align="center">
@@ -17,6 +17,30 @@
 locally-runnable* LLM models that machine can actually run — ranked across
 speed, quality, language support, context length, and license. It produces a
 **report only**: it never downloads, installs, or runs a model.
+
+## Where peyk is different
+
+There are plenty of "will it run" tools (whichllm, LM Studio's fit badge, HF's
+Model Memory Calculator, various VRAM websites). peyk is built for the corner
+they don't cover well — **offline, regulated, and CPU/edge deployments**:
+
+- 🔬 **Measured, not guessed hardware.** With `--sudo` on Linux, peyk reads real
+  DIMM speed and channel count via `dmidecode` and computes a *measured* memory
+  bandwidth — the single biggest driver of CPU/edge token/s. It also surfaces
+  NUMA topology, swap, and GPU driver. Others stop at psutil/nvidia-smi.
+- 🔒 **Air-gapped by design.** The catalog is bundled and deterministic; peyk
+  gives a full answer with **no network**. Web calculators can't run in a closed
+  network; whichllm leans on the live HF API.
+- 🛡 **Policy audits (`peyk audit`).** Gate model choices in CI against a license
+  allow-list, size cap, required languages, and a quality floor — exit code for
+  pipelines. Useful for compliance/on-prem review, not just picking a chat model.
+- 🌐 **Language-aware ranking.** `--languages tr,en` ranks by language support
+  (Turkish included) — no other tool here does this.
+- 🖥 **Hardware simulation + reverse lookup.** `--gpu "2x RTX 5090"` and
+  `peyk plan "llama 3.3 70b"` without owning the hardware.
+
+If you just want a chat model on a gaming GPU with internet, LM Studio's badge is
+enough. peyk earns its place on **CPU boxes, air-gapped racks, and CI gates**.
 
 ## Why the name?
 
@@ -152,6 +176,22 @@ peyk snippet "qwen2.5 7b"         # -> ollama / python / llama.cpp commands
 # Show just the detected (or simulated) hardware
 peyk hardware --deep
 peyk hardware --gpu "2x A100 80GB"
+
+# Policy gate for CI / on-prem review (exit 0 = compliant model available)
+peyk audit --allow-license apache-2.0,mit --max-params 32 --require-language tr
+peyk audit --policy policy.json --json
+```
+
+A policy file (`--policy policy.json`):
+
+```json
+{
+  "max_params_b": 32,
+  "allow_licenses": ["apache-2.0", "mit"],
+  "require_languages": ["tr", "en"],
+  "min_quality": 60,
+  "require_fit": true
+}
 ```
 
 ### Deep hardware probe (`--deep` / `--sudo`)
@@ -244,6 +284,33 @@ Sample artifacts (generated on an Apple M3 / 16 GB laptop):
 
 Live sources are **best-effort**: if the network is unavailable, `peyk` falls
 back to the curated catalog and still produces a report.
+
+## Catalog freshness
+
+The model world ages in months, so a stale catalog silently gives bad advice.
+peyk guards against that:
+
+- Every report shows **when the catalog was last updated** ("updated 2026-08-20
+  (1 days ago)") and warns past 45 days.
+- The catalog can be pulled from a **versioned remote endpoint** without a code
+  release: `peyk --catalog-url https://…/catalog.json` (or `PEYK_CATALOG_URL`),
+  cached locally with offline fallback.
+- `--cross-check` / `--discover` refresh sizes and surface new models live.
+
+## Accuracy & calibration
+
+peyk is honest that memory and speed are **heuristics** — but the estimates are
+grounded and improvable:
+
+- Memory = quantized weights + a GQA/MoE-aware KV-cache estimate + runtime
+  overhead. MoE models use *active* (not total) params.
+- Speed is memory-bandwidth-bound. On Linux with `--sudo`, bandwidth is
+  **measured** from real DIMM specs rather than a lookup — the biggest accuracy
+  win for CPU/edge boxes.
+
+Real predicted-vs-measured tok/s numbers (community-contributed) live in
+[`docs/accuracy.md`](docs/accuracy.md). Contributions from real machines are
+welcome — that's how this graduates from "interesting" to "trusted".
 
 ## How it works
 

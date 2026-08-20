@@ -103,13 +103,16 @@ def parse_gpu_arg(arg: str) -> tuple[GpuSpec, int]:
         count = max(1, int(m.group(1)))
         rest = m.group(2)
 
-    spec = lookup_gpu(rest)
+    # An explicit trailing VRAM ("... 80GB") is authoritative, so pull it out
+    # first and look the card up by name — otherwise a DB key that contains the
+    # bare name (e.g. "t4") would win and silently ignore the override.
     vram_override = None
-    if spec is None:
-        vm = _VRAM_RE.search(rest)
-        if vm:
-            vram_override = float(vm.group(1))
-            spec = lookup_gpu(_VRAM_RE.sub("", rest))
+    vm = _VRAM_RE.search(rest)
+    if vm:
+        vram_override = float(vm.group(1))
+        spec = lookup_gpu(_VRAM_RE.sub("", rest).strip())
+    else:
+        spec = lookup_gpu(rest)
     if spec is None:
         hint = suggest(rest)
         extra = f" Did you mean: {', '.join(hint)}?" if hint else ""

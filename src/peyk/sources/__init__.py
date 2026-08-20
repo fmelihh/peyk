@@ -10,23 +10,32 @@ from .huggingface import HuggingFaceSource
 from .merge import merge_variants, to_candidates
 from .ollama import OllamaSource
 
+# Metadata (updated date, version, origin) of the catalog loaded by the last
+# build_catalog() call — read by the CLI to surface catalog freshness.
+CATALOG_META: dict = {}
+
 
 def build_catalog(
     offline: bool = True,
     cross_check: bool = False,
     discover: bool = False,
     use_cache: bool = True,
+    catalog_url: str | None = None,
 ) -> list[ModelCandidate]:
     """Assemble the merged model catalog.
 
     - offline / default: curated only (deterministic, no network).
     - cross_check=True (online): enrich curated sizes via Ollama + HF.
     - discover=True (online): add trending GGUF models not in the curated set.
+    - catalog_url / PEYK_CATALOG_URL: pull a fresh catalog from a remote endpoint.
 
     Live-source results are cached under ~/.cache/peyk (TTL) unless use_cache is
     False.
     """
-    curated = CuratedSource().fetch()
+    global CATALOG_META
+    source = CuratedSource(url=catalog_url, use_cache=use_cache)
+    curated = source.fetch()
+    CATALOG_META = source.meta
     results: list[list[ModelVariant]] = [curated]
     seed_ids = [v.model_id for v in curated]
 

@@ -70,6 +70,10 @@ def _build_parser() -> argparse.ArgumentParser:
                      help="Verify sizes live via Ollama/HF (requires internet)")
     rec.add_argument("--discover", action="store_true",
                      help="Discover trending GGUF models from HuggingFace (requires internet)")
+    rec.add_argument("--all", action="store_true", dest="show_all",
+                     help="Also show models that won't fit")
+    rec.add_argument("--catalog-url", metavar="URL",
+                     help="Fetch the catalog from a remote endpoint (or PEYK_CATALOG_URL)")
     rec.add_argument("--no-cache", action="store_true",
                      help="Bypass the ~/.cache/peyk TTL cache for live sources")
     rec.add_argument("--live-benchmarks", action="store_true",
@@ -133,10 +137,11 @@ def _catalog_for(args, status: Console):
         cross_check=getattr(args, "cross_check", False),
         discover=getattr(args, "discover", False),
         use_cache=not getattr(args, "no_cache", False),
+        catalog_url=getattr(args, "catalog_url", None),
     )
-    if offline:
+    if offline and not kwargs["catalog_url"]:
         return build_catalog(**kwargs)
-    with status.status("[dim]Fetching from Ollama / HuggingFace…[/dim]", spinner="dots"):
+    with status.status("[dim]Fetching catalog / sources…[/dim]", spinner="dots"):
         return build_catalog(**kwargs)
 
 
@@ -165,14 +170,17 @@ def _cmd_recommend(args, console: Console, status: Console) -> int:
     min_tps = SPEED_FLOOR.get(args.speed, 0.0)
     rec = recommend(hw=hw, candidates=candidates, context=args.context,
                     languages=languages, use_case=args.use_case, min_tps=min_tps)
+    from . import sources
+    meta = sources.CATALOG_META
     if args.markdown:
         with open(args.markdown, "w", encoding="utf-8") as fh:
             fh.write(report.to_markdown(rec, top=args.top))
         status.print(f"[green]Markdown report written to:[/green] {args.markdown}")
     if args.json:
-        print(report.to_json(rec))
+        print(report.to_json(rec, catalog_meta=meta))
     else:
-        report.render_terminal(rec, top=args.top, console=console)
+        report.render_terminal(rec, top=args.top, console=console,
+                               catalog_meta=meta, show_all=args.show_all)
     return 0
 
 

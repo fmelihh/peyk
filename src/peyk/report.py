@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+from datetime import date
 
 from rich.box import ROUNDED, SIMPLE_HEAD
 from rich.columns import Columns
@@ -81,11 +82,12 @@ def _tier_label(tier: FitTier) -> Text:
     return theme.dot(TIER_STYLE[tier]) + Text(" " + TIER_LABEL[tier], style=TIER_STYLE[tier])
 
 
-def _tier_table(rec: Recommendation) -> Table:
+def _tier_table(rec: Recommendation, show_all: bool = False) -> Table:
+    tiers = (FitTier.FITS, FitTier.TIGHT, FitTier.NO_FIT) if show_all \
+        else (FitTier.FITS, FitTier.TIGHT)
     table = Table(box=ROUNDED, border_style=theme.MUTED, header_style=f"bold {theme.ACCENT}",
                   title="Feasibility · best runnable quantization per model",
-                  title_style=f"bold {theme.CYAN}", title_justify="left", expand=True,
-                  row_styles=["", "on grey11"])
+                  title_style=f"bold {theme.CYAN}", title_justify="left", expand=True)
     table.add_column("Status", no_wrap=True)
     table.add_column("Model", style="bold", overflow="fold", min_width=12)
     table.add_column("Params", justify="right")
@@ -95,7 +97,7 @@ def _tier_table(rec: Recommendation) -> Table:
     table.add_column("Score", justify="right")
     table.add_column("Source", no_wrap=True)
 
-    for tier in (FitTier.FITS, FitTier.TIGHT, FitTier.NO_FIT):
+    for tier in tiers:
         for s in rec.by_tier(tier):
             v = s.variant
             src = SOURCE_LABEL.get(v.source, v.source)
@@ -171,6 +173,35 @@ def _best_pick_panel(rec: Recommendation) -> Panel | None:
                 border_style=theme.CYAN, padding=(0, 2))
 
 
+STALE_DAYS = 45
+
+
+def catalog_age_days(meta: dict | None) -> int | None:
+    if not meta or not meta.get("updated"):
+        return None
+    try:
+        return (date.today() - date.fromisoformat(meta["updated"])).days
+    except (ValueError, TypeError):
+        return None
+
+
+def catalog_line(meta: dict | None) -> Text | None:
+    if not meta or not meta.get("updated"):
+        return None
+    age = catalog_age_days(meta)
+    origin = meta.get("origin", "bundled")
+    txt = Text("Catalog: ", style=theme.MUTED)
+    txt += Text(f"updated {meta['updated']}", style=theme.MUTED)
+    if age is not None:
+        stale = age > STALE_DAYS
+        txt += Text(f" ({age} days ago)", style=theme.YELLOW if stale else theme.MUTED)
+        if stale:
+            txt += Text("  ⚠ may be out of date — run `peyk --cross-check --discover` "
+                        "or set PEYK_CATALOG_URL", style=theme.YELLOW)
+    txt += Text(f"  · {origin}", style=theme.MUTED)
+    return txt
+
+
 def _tier_legend() -> Text:
     parts = Text("  ")
     for tier in (FitTier.FITS, FitTier.TIGHT, FitTier.NO_FIT):
@@ -178,19 +209,43 @@ def _tier_legend() -> Text:
     return parts
 
 
-def render_terminal(rec: Recommendation, top: int = 5, console: Console | None = None) -> None:
+def render_terminal(rec: Recommendation, top: int = 5, console: Console | None = None,
+                    catalog_meta: dict | None = None, show_all: bool = False) -> None:
     console = console or Console()
     console.print()
     console.print(theme.header())
     console.print()
     console.print(_hardware_panel(rec.hw))
     console.print()
+
+    runnable = [s for s in rec.scored if s.fit.tier != FitTier.NO_FIT]
+    if not runnable:
+        smallest = min(rec.scored, key=lambda s: s.fit.mem_need_gb, default=None)
+        hint = ("No model runs on this hardware. "
+                + (f"The smallest option ({smallest.variant.family} "
+                   f"{smallest.variant.params_b:g}B) still needs "
+                   f"{smallest.fit.mem_need_gb:.1f} GB vs a "
+                   f"{rec.hw.memory_pool_gb:.1f} GB pool. " if smallest else "")
+                + "Try a smaller --context, drop --use-case vision, or --gpu to simulate more VRAM.")
+        console.print(Panel(Text(hint, style=theme.YELLOW), title="Nothing fits",
+                            title_align="left", box=ROUNDED, border_style=theme.YELLOW,
+                            padding=(0, 2)))
+        if show_all and rec.scored:
+            console.print()
+            console.print(_tier_table(rec, show_all=True))
+        return
+
     best = _best_pick_panel(rec)
     if best:
         console.print(best)
         console.print()
-    console.print(_tier_table(rec))
+    console.print(_tier_table(rec, show_all=show_all))
     console.print(_tier_legend())
+    if not show_all:
+        hidden = len(rec.by_tier(FitTier.NO_FIT))
+        if hidden:
+            console.print(Text(f"  {hidden} model(s) won't fit — pass --all to show them.",
+                               style=theme.MUTED))
     disk_warn = _disk_warning(rec)
     if disk_warn:
         console.print(Text(disk_warn, style=theme.YELLOW))
@@ -200,6 +255,10 @@ def render_terminal(rec: Recommendation, top: int = 5, console: Console | None =
     console.print()
     console.print(Columns([_criterion_table(rec, c, top) for c in CRITERIA],
                           equal=False, expand=True, padding=(0, 2)))
+    cat = catalog_line(catalog_meta)
+    if cat:
+        console.print()
+        console.print(cat)
     console.print(
         "\n[dim]Estimates: memory & speed are approximate and depend on backend, "
         "quantization, and context. Quality is an evidence-tagged benchmark score "
@@ -224,10 +283,11 @@ def _scored_to_dict(s: ScoredModel) -> dict:
     }
 
 
-def to_json(rec: Recommendation) -> str:
+def to_json(rec: Recommendation, catalog_meta: dict | None = None) -> str:
     payload = {
         "hardware": rec.hw.model_dump(mode="json"),
         "context": rec.context,
+        "catalog": {**(catalog_meta or {}), "age_days": catalog_age_days(catalog_meta)},
         "models": [_scored_to_dict(s) for s in
                    sorted(rec.scored, key=lambda x: x.overall, reverse=True)],
     }

@@ -1,5 +1,7 @@
 {
-  "_comment": "Curated catalog of current local LLMs (as of 2026-08). file_size_gb are typical GGUF sizes. quality_score is a coarse capability proxy (0-100). Update periodically.",
+  "_comment": "Curated catalog of current local LLMs. file_size_gb are typical GGUF sizes. quality_score is a coarse capability proxy (0-100). Update periodically.",
+  "updated": "2026-08-20",
+  "version": "2026.08.20",
   "variants": [
     {"model_id": "llama3.2:1b", "family": "Llama 3.2", "params_b": 1, "quant": "Q4_K_M", "file_size_gb": 0.8, "context_max": 131072, "languages": ["en","de","fr","es","it","pt","hi","th"], "license": "llama3", "quality_score": 42},
     {"model_id": "llama3.2:3b", "family": "Llama 3.2", "params_b": 3, "quant": "Q4_K_M", "file_size_gb": 2.0, "context_max": 131072, "languages": ["en","de","fr","es","it","pt","hi","th"], "license": "llama3", "quality_score": 58},

@@ -2,15 +2,19 @@
   "hardware": {
     "os": "Darwin",
     "arch": "arm64",
-    "cpu_model": null,
+    "cpu_model": "Apple M3",
     "cpu_cores_physical": 8,
     "cpu_cores_logical": 8,
     "cpu_flags": [
       "neon"
     ],
     "ram_total_gb": 16.0,
-    "ram_available_gb": 6.5,
-    "disk_free_gb": 188.1,
+    "ram_available_gb": 5.9,
+    "swap_total_gb": 0.0,
+    "disk_free_gb": 187.7,
+    "numa_nodes": null,
+    "gpu_driver": null,
+    "gpu_compute_cap": null,
     "ram_type": null,
     "ram_speed_mtps": null,
     "ram_channels": null,
@@ -27,27 +31,13 @@
     "pool_cap_gb": null
   },
   "context": 8192,
+  "catalog": {
+    "updated": "2026-08-21",
+    "version": "2026.08.21",
+    "origin": "bundled",
+    "age_days": 0
+  },
   "models": [
-    {
-      "model": "Llama 3.2",
-      "model_id": "llama3.2:1b",
-      "params_b": 1.0,
-      "quant": "Q4_K_M",
-      "source": "curated",
-      "tier": "FITS",
-      "mem_need_gb": 1.84,
-      "est_tokens_per_sec": 68.8,
-      "scores": {
-        "speed": 100.0,
-        "quality": 40.0,
-        "language": 100.0,
-        "context": 100.0,
-        "license": 100.0
-      },
-      "quality_evidence": "direct",
-      "quality_source": "openllm-lb-v2+arena (snapshot 2026-08, approx)",
-      "overall": 79.0
-    },
     {
       "model": "Nomic Embed",
       "model_id": "nomic-embed-text",
@@ -56,6 +46,11 @@
       "source": "curated",
       "tier": "FITS",
       "mem_need_gb": 1.22,
+      "mem_breakdown": {
+        "weights_gb": 0.3,
+        "kv_cache_gb": 0.02,
+        "overhead_gb": 0.9
+      },
       "est_tokens_per_sec": 183.3,
       "scores": {
         "speed": 100.0,
@@ -76,6 +71,11 @@
       "source": "curated",
       "tier": "FITS",
       "mem_need_gb": 1.6,
+      "mem_breakdown": {
+        "weights_gb": 0.7,
+        "kv_cache_gb": 0.0,
+        "overhead_gb": 0.9
+      },
       "est_tokens_per_sec": 78.6,
       "scores": {
         "speed": 100.0,
@@ -96,6 +96,11 @@
       "source": "curated",
       "tier": "FITS",
       "mem_need_gb": 1.37,
+      "mem_breakdown": {
+        "weights_gb": 0.4,
+        "kv_cache_gb": 0.07,
+        "overhead_gb": 0.9
+      },
       "est_tokens_per_sec": 137.5,
       "scores": {
         "speed": 100.0,
@@ -109,13 +114,43 @@
       "overall": 74.3
     },
     {
+      "model": "Phi-3.5-mini",
+      "model_id": "phi3.5:3.8b",
+      "params_b": 3.8,
+      "quant": "Q4_K_M",
+      "source": "curated",
+      "tier": "FITS",
+      "mem_need_gb": 3.62,
+      "mem_breakdown": {
+        "weights_gb": 2.18,
+        "kv_cache_gb": 0.54,
+        "overhead_gb": 0.9
+      },
+      "est_tokens_per_sec": 25.2,
+      "scores": {
+        "speed": 42.0,
+        "quality": 62.0,
+        "language": 100.0,
+        "context": 100.0,
+        "license": 100.0
+      },
+      "quality_evidence": "direct",
+      "quality_source": "openllm-lb-v2+arena (snapshot 2026-08, approx)",
+      "overall": 72.2
+    },
+    {
       "model": "DeepSeek-R1-Distill",
       "model_id": "deepseek-r1:70b",
       "params_b": 70.0,
       "quant": "Q4_K_M",
       "source": "curated",
       "tier": "NO_FIT",
-      "mem_need_gb": 53.94,
+      "mem_need_gb": 53.46,
+      "mem_breakdown": {
+        "weights_gb": 42.52,
+        "kv_cache_gb": 10.04,
+        "overhead_gb": 0.9
+      },
       "est_tokens_per_sec": 1.3,
       "scores": {
         "speed": 2.2,
@@ -135,7 +170,12 @@
       "quant": "Q4_K_M",
       "source": "curated",
       "tier": "NO_FIT",
-      "mem_need_gb": 25.49,
+      "mem_need_gb": 25.34,
+      "mem_breakdown": {
+        "weights_gb": 19.85,
+        "kv_cache_gb": 4.59,
+        "overhead_gb": 0.9
+      },
       "est_tokens_per_sec": 2.8,
       "scores": {
         "speed": 4.7,
@@ -149,13 +189,43 @@
       "overall": 71.6
     },
     {
+      "model": "Llama 3.2",
+      "model_id": "llama3.2:1b",
+      "params_b": 1.0,
+      "quant": "Q4_K_M",
+      "source": "curated",
+      "tier": "FITS",
+      "mem_need_gb": 2.36,
+      "mem_breakdown": {
+        "weights_gb": 1.32,
+        "kv_cache_gb": 0.14,
+        "overhead_gb": 0.9
+      },
+      "est_tokens_per_sec": 41.7,
+      "scores": {
+        "speed": 69.5,
+        "quality": 40.0,
+        "language": 100.0,
+        "context": 100.0,
+        "license": 100.0
+      },
+      "quality_evidence": "direct",
+      "quality_source": "openllm-lb-v2+arena (snapshot 2026-08, approx)",
+      "overall": 71.4
+    },
+    {
       "model": "Llama 3.3",
       "model_id": "llama3.3:70b",
       "params_b": 70.0,
       "quant": "Q4_K_M",
       "source": "curated",
       "tier": "NO_FIT",
-      "mem_need_gb": 53.94,
+      "mem_need_gb": 53.46,
+      "mem_breakdown": {
+        "weights_gb": 42.52,
+        "kv_cache_gb": 10.04,
+        "overhead_gb": 0.9
+      },
       "est_tokens_per_sec": 1.3,
       "scores": {
         "speed": 2.2,
@@ -169,33 +239,18 @@
       "overall": 71.3
     },
     {
-      "model": "Phi-3.5-mini",
-      "model_id": "phi3.5:3.8b",
-      "params_b": 3.8,
-      "quant": "Q4_K_M",
-      "source": "curated",
-      "tier": "FITS",
-      "mem_need_gb": 3.84,
-      "est_tokens_per_sec": 22.9,
-      "scores": {
-        "speed": 38.2,
-        "quality": 62.0,
-        "language": 100.0,
-        "context": 100.0,
-        "license": 100.0
-      },
-      "quality_evidence": "direct",
-      "quality_source": "openllm-lb-v2+arena (snapshot 2026-08, approx)",
-      "overall": 71.2
-    },
-    {
       "model": "Gemma 3",
       "model_id": "gemma3:27b",
       "params_b": 27.0,
       "quant": "Q4_K_M",
       "source": "curated",
       "tier": "NO_FIT",
-      "mem_need_gb": 21.77,
+      "mem_need_gb": 22.17,
+      "mem_breakdown": {
+        "weights_gb": 17.4,
+        "kv_cache_gb": 3.87,
+        "overhead_gb": 0.9
+      },
       "est_tokens_per_sec": 3.2,
       "scores": {
         "speed": 5.3,
@@ -216,6 +271,11 @@
       "source": "curated",
       "tier": "FITS",
       "mem_need_gb": 3.33,
+      "mem_breakdown": {
+        "weights_gb": 2.0,
+        "kv_cache_gb": 0.43,
+        "overhead_gb": 0.9
+      },
       "est_tokens_per_sec": 27.5,
       "scores": {
         "speed": 45.8,
@@ -229,19 +289,24 @@
       "overall": 71.0
     },
     {
-      "model": "Qwen3",
-      "model_id": "qwen3:32b",
-      "params_b": 32.0,
+      "model": "Qwen2.5",
+      "model_id": "qwen2.5:3b",
+      "params_b": 3.0,
       "quant": "Q4_K_M",
       "source": "curated",
-      "tier": "NO_FIT",
-      "mem_need_gb": 25.49,
-      "est_tokens_per_sec": 2.8,
+      "tier": "FITS",
+      "mem_need_gb": 3.26,
+      "mem_breakdown": {
+        "weights_gb": 1.93,
+        "kv_cache_gb": 0.43,
+        "overhead_gb": 0.9
+      },
+      "est_tokens_per_sec": 28.5,
       "scores": {
-        "speed": 4.7,
-        "quality": 88.0,
+        "speed": 47.5,
+        "quality": 58.0,
         "language": 100.0,
-        "context": 90.1,
+        "context": 88.2,
         "license": 100.0
       },
       "quality_evidence": "direct",
@@ -249,19 +314,24 @@
       "overall": 71.0
     },
     {
-      "model": "DeepSeek-R1-Distill",
-      "model_id": "deepseek-r1:8b",
-      "params_b": 8.0,
+      "model": "Qwen3",
+      "model_id": "qwen3:32b",
+      "params_b": 32.0,
       "quant": "Q4_K_M",
       "source": "curated",
-      "tier": "FITS",
-      "mem_need_gb": 6.95,
-      "est_tokens_per_sec": 11.2,
+      "tier": "NO_FIT",
+      "mem_need_gb": 25.69,
+      "mem_breakdown": {
+        "weights_gb": 20.2,
+        "kv_cache_gb": 4.59,
+        "overhead_gb": 0.9
+      },
+      "est_tokens_per_sec": 2.7,
       "scores": {
-        "speed": 18.7,
-        "quality": 75.0,
+        "speed": 4.5,
+        "quality": 88.0,
         "language": 100.0,
-        "context": 100.0,
+        "context": 90.1,
         "license": 100.0
       },
       "quality_evidence": "direct",
@@ -276,6 +346,11 @@
       "source": "curated",
       "tier": "FITS",
       "mem_need_gb": 6.6,
+      "mem_breakdown": {
+        "weights_gb": 4.7,
+        "kv_cache_gb": 1.0,
+        "overhead_gb": 0.9
+      },
       "est_tokens_per_sec": 11.7,
       "scores": {
         "speed": 19.5,
@@ -289,19 +364,24 @@
       "overall": 70.8
     },
     {
-      "model": "Qwen2.5",
-      "model_id": "qwen2.5:3b",
-      "params_b": 3.0,
+      "model": "DeepSeek-R1-Distill",
+      "model_id": "deepseek-r1:8b",
+      "params_b": 8.0,
       "quant": "Q4_K_M",
       "source": "curated",
       "tier": "FITS",
-      "mem_need_gb": 3.33,
-      "est_tokens_per_sec": 27.5,
+      "mem_need_gb": 7.28,
+      "mem_breakdown": {
+        "weights_gb": 5.23,
+        "kv_cache_gb": 1.15,
+        "overhead_gb": 0.9
+      },
+      "est_tokens_per_sec": 10.5,
       "scores": {
-        "speed": 45.8,
-        "quality": 58.0,
+        "speed": 17.5,
+        "quality": 75.0,
         "language": 100.0,
-        "context": 88.2,
+        "context": 100.0,
         "license": 100.0
       },
       "quality_evidence": "direct",
@@ -315,10 +395,15 @@
       "quant": "Q4_K_M",
       "source": "curated",
       "tier": "TIGHT",
-      "mem_need_gb": 10.72,
-      "est_tokens_per_sec": 6.8,
+      "mem_need_gb": 10.77,
+      "mem_breakdown": {
+        "weights_gb": 8.15,
+        "kv_cache_gb": 1.72,
+        "overhead_gb": 0.9
+      },
+      "est_tokens_per_sec": 6.7,
       "scores": {
-        "speed": 11.3,
+        "speed": 11.2,
         "quality": 79.0,
         "language": 100.0,
         "context": 100.0,
@@ -335,7 +420,12 @@
       "quant": "Q4_K_M",
       "source": "curated",
       "tier": "NO_FIT",
-      "mem_need_gb": 68.8,
+      "mem_need_gb": 68.42,
+      "mem_breakdown": {
+        "weights_gb": 54.62,
+        "kv_cache_gb": 12.9,
+        "overhead_gb": 0.9
+      },
       "est_tokens_per_sec": 1.0,
       "scores": {
         "speed": 1.7,
@@ -356,6 +446,11 @@
       "source": "curated",
       "tier": "FITS",
       "mem_need_gb": 7.25,
+      "mem_breakdown": {
+        "weights_gb": 5.2,
+        "kv_cache_gb": 1.15,
+        "overhead_gb": 0.9
+      },
       "est_tokens_per_sec": 10.6,
       "scores": {
         "speed": 17.7,
@@ -375,7 +470,12 @@
       "quant": "Q4_K_M",
       "source": "curated",
       "tier": "NO_FIT",
-      "mem_need_gb": 25.49,
+      "mem_need_gb": 25.34,
+      "mem_breakdown": {
+        "weights_gb": 19.85,
+        "kv_cache_gb": 4.59,
+        "overhead_gb": 0.9
+      },
       "est_tokens_per_sec": 2.8,
       "scores": {
         "speed": 4.7,
@@ -395,7 +495,12 @@
       "quant": "Q4_K_M",
       "source": "curated",
       "tier": "NO_FIT",
-      "mem_need_gb": 25.49,
+      "mem_need_gb": 25.34,
+      "mem_breakdown": {
+        "weights_gb": 19.85,
+        "kv_cache_gb": 4.59,
+        "overhead_gb": 0.9
+      },
       "est_tokens_per_sec": 2.8,
       "scores": {
         "speed": 4.7,
@@ -416,6 +521,11 @@
       "source": "curated",
       "tier": "NO_FIT",
       "mem_need_gb": 34.04,
+      "mem_breakdown": {
+        "weights_gb": 26.4,
+        "kv_cache_gb": 6.74,
+        "overhead_gb": 0.9
+      },
       "est_tokens_per_sec": 7.5,
       "scores": {
         "speed": 12.5,
@@ -436,6 +546,11 @@
       "source": "curated",
       "tier": "FITS",
       "mem_need_gb": 2.79,
+      "mem_breakdown": {
+        "weights_gb": 1.6,
+        "kv_cache_gb": 0.29,
+        "overhead_gb": 0.9
+      },
       "est_tokens_per_sec": 34.4,
       "scores": {
         "speed": 57.3,
@@ -456,6 +571,11 @@
       "source": "curated",
       "tier": "TIGHT",
       "mem_need_gb": 11.91,
+      "mem_breakdown": {
+        "weights_gb": 9.0,
+        "kv_cache_gb": 2.01,
+        "overhead_gb": 0.9
+      },
       "est_tokens_per_sec": 6.1,
       "scores": {
         "speed": 10.2,
@@ -476,6 +596,11 @@
       "source": "curated",
       "tier": "NO_FIT",
       "mem_need_gb": 18.64,
+      "mem_breakdown": {
+        "weights_gb": 14.3,
+        "kv_cache_gb": 3.44,
+        "overhead_gb": 0.9
+      },
       "est_tokens_per_sec": 3.8,
       "scores": {
         "speed": 6.3,
@@ -496,6 +621,11 @@
       "source": "curated",
       "tier": "FITS",
       "mem_need_gb": 4.77,
+      "mem_breakdown": {
+        "weights_gb": 3.3,
+        "kv_cache_gb": 0.57,
+        "overhead_gb": 0.9
+      },
       "est_tokens_per_sec": 16.7,
       "scores": {
         "speed": 27.8,
@@ -516,6 +646,11 @@
       "source": "curated",
       "tier": "FITS",
       "mem_need_gb": 6.95,
+      "mem_breakdown": {
+        "weights_gb": 4.9,
+        "kv_cache_gb": 1.15,
+        "overhead_gb": 0.9
+      },
       "est_tokens_per_sec": 11.2,
       "scores": {
         "speed": 18.7,
@@ -536,6 +671,11 @@
       "source": "curated",
       "tier": "FITS",
       "mem_need_gb": 6.6,
+      "mem_breakdown": {
+        "weights_gb": 4.7,
+        "kv_cache_gb": 1.0,
+        "overhead_gb": 0.9
+      },
       "est_tokens_per_sec": 11.7,
       "scores": {
         "speed": 19.5,
@@ -556,6 +696,11 @@
       "source": "curated",
       "tier": "TIGHT",
       "mem_need_gb": 12.01,
+      "mem_breakdown": {
+        "weights_gb": 9.1,
+        "kv_cache_gb": 2.01,
+        "overhead_gb": 0.9
+      },
       "est_tokens_per_sec": 6.0,
       "scores": {
         "speed": 10.0,
@@ -576,30 +721,15 @@
       "source": "curated",
       "tier": "FITS",
       "mem_need_gb": 6.6,
+      "mem_breakdown": {
+        "weights_gb": 4.7,
+        "kv_cache_gb": 1.0,
+        "overhead_gb": 0.9
+      },
       "est_tokens_per_sec": 11.7,
       "scores": {
         "speed": 19.5,
         "quality": 72.0,
-        "language": 100.0,
-        "context": 88.2,
-        "license": 100.0
-      },
-      "quality_evidence": "direct",
-      "quality_source": "openllm-lb-v2+arena (snapshot 2026-08, approx)",
-      "overall": 68.9
-    },
-    {
-      "model": "Qwen2.5-VL",
-      "model_id": "qwen2.5vl:7b",
-      "params_b": 7.0,
-      "quant": "Q4_K_M",
-      "source": "curated",
-      "tier": "FITS",
-      "mem_need_gb": 6.9,
-      "est_tokens_per_sec": 11.0,
-      "scores": {
-        "speed": 18.3,
-        "quality": 73.0,
         "language": 100.0,
         "context": 88.2,
         "license": 100.0
@@ -615,10 +745,15 @@
       "quant": "Q4_K_M",
       "source": "curated",
       "tier": "NO_FIT",
-      "mem_need_gb": 21.37,
-      "est_tokens_per_sec": 3.3,
+      "mem_need_gb": 20.4,
+      "mem_breakdown": {
+        "weights_gb": 15.63,
+        "kv_cache_gb": 3.87,
+        "overhead_gb": 0.9
+      },
+      "est_tokens_per_sec": 3.5,
       "scores": {
-        "speed": 5.5,
+        "speed": 5.8,
         "quality": 83.0,
         "language": 100.0,
         "context": 76.5,
@@ -626,7 +761,32 @@
       },
       "quality_evidence": "direct",
       "quality_source": "openllm-lb-v2+arena (snapshot 2026-08, approx)",
-      "overall": 68.1
+      "overall": 68.2
+    },
+    {
+      "model": "Qwen2.5-VL",
+      "model_id": "qwen2.5vl:7b",
+      "params_b": 7.0,
+      "quant": "Q4_K_M",
+      "source": "curated",
+      "tier": "FITS",
+      "mem_need_gb": 7.87,
+      "mem_breakdown": {
+        "weights_gb": 5.97,
+        "kv_cache_gb": 1.0,
+        "overhead_gb": 0.9
+      },
+      "est_tokens_per_sec": 9.2,
+      "scores": {
+        "speed": 15.3,
+        "quality": 73.0,
+        "language": 100.0,
+        "context": 88.2,
+        "license": 100.0
+      },
+      "quality_evidence": "direct",
+      "quality_source": "openllm-lb-v2+arena (snapshot 2026-08, approx)",
+      "overall": 68.2
     },
     {
       "model": "Llama 3.2 Vision",
@@ -635,7 +795,12 @@
       "quant": "Q4_K_M",
       "source": "curated",
       "tier": "TIGHT",
-      "mem_need_gb": 10.38,
+      "mem_need_gb": 10.3,
+      "mem_breakdown": {
+        "weights_gb": 7.82,
+        "kv_cache_gb": 1.58,
+        "overhead_gb": 0.9
+      },
       "est_tokens_per_sec": 7.0,
       "scores": {
         "speed": 11.7,
@@ -655,7 +820,12 @@
       "quant": "Q4_K_M",
       "source": "curated",
       "tier": "NO_FIT",
-      "mem_need_gb": 58.22,
+      "mem_need_gb": 58.64,
+      "mem_breakdown": {
+        "weights_gb": 47.42,
+        "kv_cache_gb": 10.32,
+        "overhead_gb": 0.9
+      },
       "est_tokens_per_sec": 1.2,
       "scores": {
         "speed": 2.0,
@@ -675,10 +845,15 @@
       "quant": "Q4_K_M",
       "source": "curated",
       "tier": "NO_FIT",
-      "mem_need_gb": 58.22,
-      "est_tokens_per_sec": 1.2,
+      "mem_need_gb": 59.93,
+      "mem_breakdown": {
+        "weights_gb": 48.71,
+        "kv_cache_gb": 10.32,
+        "overhead_gb": 0.9
+      },
+      "est_tokens_per_sec": 1.1,
       "scores": {
-        "speed": 2.0,
+        "speed": 1.8,
         "quality": 88.0,
         "language": 100.0,
         "context": 88.2,
@@ -696,6 +871,11 @@
       "source": "curated",
       "tier": "FITS",
       "mem_need_gb": 6.3,
+      "mem_breakdown": {
+        "weights_gb": 4.4,
+        "kv_cache_gb": 1.0,
+        "overhead_gb": 0.9
+      },
       "est_tokens_per_sec": 12.5,
       "scores": {
         "speed": 20.8,
@@ -715,10 +895,15 @@
       "quant": "Q4_K_M",
       "source": "curated",
       "tier": "FITS",
-      "mem_need_gb": 7.99,
-      "est_tokens_per_sec": 9.5,
+      "mem_need_gb": 7.63,
+      "mem_breakdown": {
+        "weights_gb": 5.44,
+        "kv_cache_gb": 1.29,
+        "overhead_gb": 0.9
+      },
+      "est_tokens_per_sec": 10.1,
       "scores": {
-        "speed": 15.8,
+        "speed": 16.8,
         "quality": 72.0,
         "language": 100.0,
         "context": 76.5,
@@ -726,7 +911,7 @@
       },
       "quality_evidence": "direct",
       "quality_source": "openllm-lb-v2+arena (snapshot 2026-08, approx)",
-      "overall": 66.8
+      "overall": 67.0
     },
     {
       "model": "Aya Expanse",
@@ -735,7 +920,12 @@
       "quant": "Q4_K_M",
       "source": "curated",
       "tier": "NO_FIT",
-      "mem_need_gb": 25.49,
+      "mem_need_gb": 25.29,
+      "mem_breakdown": {
+        "weights_gb": 19.8,
+        "kv_cache_gb": 4.59,
+        "overhead_gb": 0.9
+      },
       "est_tokens_per_sec": 2.8,
       "scores": {
         "speed": 4.7,
@@ -756,6 +946,11 @@
       "source": "curated",
       "tier": "FITS",
       "mem_need_gb": 7.15,
+      "mem_breakdown": {
+        "weights_gb": 5.1,
+        "kv_cache_gb": 1.15,
+        "overhead_gb": 0.9
+      },
       "est_tokens_per_sec": 10.8,
       "scores": {
         "speed": 18.0,

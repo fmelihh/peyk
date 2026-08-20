@@ -137,6 +137,26 @@ opt-in live overlay.
   (highest trust) and take precedence over `direct`.
 - Off by default with no hardcoded endpoint (honest — no fake "live" data).
 
+## Post-roadmap: niche focus (offline / measured / auditable)
+
+After a competitive review (whichllm owns the general "will it run" CLI), work
+shifted to peyk's defensible edges rather than feature parity:
+
+- **✅ Catalog freshness** — `updated` date shown + stale warning; remote
+  `PEYK_CATALOG_URL`; a weekly GitHub Action (`scripts/refresh_catalog.py`)
+  re-verifies sizes and opens a rolling PR.
+- **✅ `peyk audit`** — CI-friendly policy gate (license/params/languages/quality/
+  fit), flags or JSON policy, exit code + `--json`.
+- **✅ Deeper hardware** — measured bandwidth (`--sudo`), swap, NUMA, GPU driver +
+  compute capability, baseline CPU model.
+- **✅ Auditable estimates** — per-model memory breakdown (weights/KV/overhead).
+- **✅ Ergonomics** — `peyk <family>` filter, `.peyk.json` team defaults,
+  `--plain`, WON'T-FIT collapse, "nothing fits" guidance.
+- **✅ Polished UI** — gradient header, best-pick, colour-coded speed + Load bars.
+
+Remaining leverage is non-code: visibility (push, demo GIF, r/LocalLLaMA) and
+real predicted-vs-measured data ([`accuracy.md`](accuracy.md)).
+
 ## Out of scope (deliberate)
 
 - `peyk run` (download + interactive chat) — breaks the report-only identity.

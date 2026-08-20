@@ -29,7 +29,10 @@ class HardwareProfile(BaseModel):
     cpu_flags: list[str] = Field(default_factory=list)
     ram_total_gb: float
     ram_available_gb: float
+    swap_total_gb: float = 0.0               # swap can rescue an over-budget model (slowly)
     disk_free_gb: float = 0.0                # free space where models download
+    numa_nodes: int | None = None            # multi-socket NUMA topology (Linux)
+    gpu_driver: str | None = None            # NVIDIA driver version
     ram_type: str | None = None          # e.g. DDR5, LPDDR5 (deep probe)
     ram_speed_mtps: int | None = None     # transfer rate in MT/s (deep probe)
     ram_channels: int | None = None       # populated DIMMs / channels (deep probe)

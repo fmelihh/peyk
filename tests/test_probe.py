@@ -59,3 +59,12 @@ def test_enrich_missing_dimms_keeps_estimate():
     out = enrich_profile(prof, data)
     assert out.ram_type == "DDR4"
     assert out.mem_bandwidth_source == "estimated"
+
+
+def test_detect_includes_system_details():
+    from peyk.profiler import detect
+    p = detect()
+    assert p.swap_total_gb >= 0
+    # numa_nodes/gpu_driver are platform-dependent; just ensure the fields exist.
+    assert hasattr(p, "numa_nodes")
+    assert hasattr(p, "gpu_driver")

@@ -45,6 +45,10 @@ def _hardware_panel(hw) -> Panel:
         ("CPU", cpu),
         ("RAM", f"{hw.ram_available_gb:.1f} / {hw.ram_total_gb:.1f} GB free"),
     ]
+    if hw.numa_nodes and hw.numa_nodes > 1:
+        facts.append(("NUMA nodes", str(hw.numa_nodes)))
+    if hw.swap_total_gb:
+        facts.append(("Swap", f"{hw.swap_total_gb:.1f} GB"))
     if hw.disk_free_gb:
         facts.append(("Disk free", f"{hw.disk_free_gb:.1f} GB"))
     if hw.ram_type or hw.ram_speed_mtps:
@@ -53,6 +57,8 @@ def _hardware_panel(hw) -> Panel:
             f"x{hw.ram_channels} DIMM" if hw.ram_channels else None) if p)
         facts.append(("RAM spec", spec))
     facts.append(("Accelerator", accel))
+    if hw.gpu_driver:
+        facts.append(("GPU driver", hw.gpu_driver))
     if hw.vram_total_gb:
         note = f"  (across {hw.gpu_count} GPUs)" if hw.gpu_count > 1 else ""
         facts.append(("VRAM", f"{hw.vram_total_gb:.1f} GB{note}"))
@@ -353,6 +359,50 @@ def render_snippet(data: dict, console: Console | None = None) -> None:
 
 def snippet_to_json(data: dict) -> str:
     return json.dumps(data, indent=2, ensure_ascii=False)
+
+
+def render_audit(rows, ok: bool, top: int = 12, console: Console | None = None) -> None:
+    console = console or Console()
+    console.print()
+    verdict = (Text(" PASS ", style=f"bold white on {theme.GREEN}") if ok
+               else Text(" FAIL ", style="bold white on #f87171"))
+    n_ok = sum(1 for r in rows if r.compliant)
+    console.print(Panel(
+        verdict + Text(f"  {n_ok}/{len(rows)} models comply with the policy",
+                       style="default"),
+        title="🛡  peyk audit", title_align="left", box=ROUNDED,
+        border_style=theme.GREEN if ok else "#f87171", padding=(0, 2)))
+    table = Table(box=ROUNDED, border_style=theme.MUTED, header_style=f"bold {theme.ACCENT}",
+                  expand=True)
+    table.add_column("", no_wrap=True)
+    table.add_column("Model", style="bold")
+    table.add_column("Params", justify="right")
+    table.add_column("License")
+    table.add_column("Notes")
+    for r in rows[:top]:
+        mark = theme.dot(theme.GREEN) if r.compliant else theme.dot(theme.RED)
+        notes = Text("compliant", style=theme.GREEN) if r.compliant \
+            else Text("; ".join(r.violations), style=theme.YELLOW)
+        v = r.scored.variant
+        table.add_row(mark, v.family, f"{v.params_b:g}B", v.license, notes)
+    console.print(table)
+
+
+def audit_to_json(rows, ok: bool) -> str:
+    return json.dumps({
+        "passed": ok,
+        "compliant_count": sum(1 for r in rows if r.compliant),
+        "total": len(rows),
+        "models": [{
+            "model": r.scored.variant.family,
+            "model_id": r.scored.variant.model_id,
+            "params_b": r.scored.variant.params_b,
+            "license": r.scored.variant.license,
+            "tier": r.scored.fit.tier.value,
+            "compliant": r.compliant,
+            "violations": r.violations,
+        } for r in rows],
+    }, indent=2, ensure_ascii=False)
 
 
 def to_markdown(rec: Recommendation, top: int = 5) -> str:

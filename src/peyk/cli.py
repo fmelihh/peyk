@@ -19,7 +19,7 @@ from .simulate import simulate_profile
 from .sources import build_catalog
 
 USE_CASES = ["chat", "coding", "summarize", "embedding", "vision", "math"]
-SUBCOMMANDS = {"recommend", "hardware", "plan", "snippet"}
+SUBCOMMANDS = {"recommend", "hardware", "plan", "snippet", "audit"}
 SPEED_FLOOR = {"usable": 4.0, "fast": 10.0}
 
 
@@ -109,6 +109,17 @@ def _build_parser() -> argparse.ArgumentParser:
     sn.add_argument("--json", action="store_true", help="Emit machine-readable JSON")
     _add_hardware_flags(sn)
     _add_common_flags(sn)
+
+    au = sub.add_parser("audit", help="Check models against an org policy (CI gate)")
+    au.add_argument("--policy", metavar="FILE", help="JSON policy file")
+    au.add_argument("--max-params", type=float, metavar="B", help="Max allowed parameters (B)")
+    au.add_argument("--allow-license", help="Comma-separated allowed licenses")
+    au.add_argument("--require-language", help="Comma-separated required languages")
+    au.add_argument("--min-quality", type=float, metavar="N", help="Minimum quality score (0-100)")
+    au.add_argument("--context", type=int, default=8192, help="Target context length in tokens")
+    au.add_argument("--json", action="store_true", help="Emit machine-readable JSON")
+    _add_hardware_flags(au)
+    _add_common_flags(au)
 
     return p
 
@@ -237,11 +248,41 @@ def _cmd_snippet(args, console: Console, status: Console) -> int:
     return 0
 
 
+def _cmd_audit(args, console: Console, status: Console) -> int:
+    from .audit import Policy, audit, passed
+    try:
+        if args.policy:
+            policy = Policy.from_file(args.policy)
+        else:
+            policy = Policy(
+                max_params_b=args.max_params,
+                allow_licenses=({x.strip().lower() for x in args.allow_license.split(",")}
+                                if args.allow_license else None),
+                require_languages=([x.strip() for x in args.require_language.split(",")]
+                                   if args.require_language else []),
+                min_quality=args.min_quality,
+            )
+    except (OSError, ValueError) as exc:
+        status.print(f"[red]Could not load policy: {exc}[/red]")
+        return 2
+    candidates = build_catalog(offline=True)
+    hw = _resolve_hardware(args, status)
+    rec = recommend(hw=hw, candidates=candidates, context=args.context)
+    rows = audit(rec.scored, policy)
+    ok = passed(rows)
+    if args.json:
+        print(report.audit_to_json(rows, ok))
+    else:
+        report.render_audit(rows, ok, console=console)
+    return 0 if ok else 1
+
+
 _DISPATCH = {
     "recommend": _cmd_recommend,
     "hardware": _cmd_hardware,
     "plan": _cmd_plan,
     "snippet": _cmd_snippet,
+    "audit": _cmd_audit,
 }
 
 

@@ -52,7 +52,8 @@ def _add_hardware_flags(p: argparse.ArgumentParser) -> None:
                    help="Allow the deep probe to use sudo (Linux dmidecode); implies --deep")
 
 
-def _build_parser() -> argparse.ArgumentParser:
+def _build_parser(config: dict | None = None) -> argparse.ArgumentParser:
+    cfg = config or {}
     p = argparse.ArgumentParser(
         prog="peyk",
         description="Recommend the best current local LLM models your hardware can run.",
@@ -63,10 +64,15 @@ def _build_parser() -> argparse.ArgumentParser:
     rec = sub.add_parser("recommend", help="Recommend models for this (or a simulated) machine")
     rec.add_argument("query", nargs="?",
                      help="Optional family filter, e.g. `peyk qwen` or `peyk llama`")
-    rec.add_argument("--use-case", choices=USE_CASES, help="Intended use case (scoring weights)")
-    rec.add_argument("--languages", default="en", help="Comma-separated language codes, e.g. tr,en")
-    rec.add_argument("--context", type=int, default=8192, help="Target context length in tokens")
-    rec.add_argument("--top", type=int, default=5, help="Models to show per criterion")
+    rec.add_argument("--use-case", choices=USE_CASES,
+                     default=cfg.get("use_case") if cfg.get("use_case") in USE_CASES else None,
+                     help="Intended use case (scoring weights)")
+    rec.add_argument("--languages", default=str(cfg.get("languages", "en")),
+                     help="Comma-separated language codes, e.g. tr,en")
+    rec.add_argument("--context", type=int, default=int(cfg.get("context", 8192)),
+                     help="Target context length in tokens")
+    rec.add_argument("--top", type=int, default=int(cfg.get("top", 5)),
+                     help="Models to show per criterion")
     rec.add_argument("--offline", action="store_true", help="Bundled catalog only; no network")
     rec.add_argument("--cross-check", action="store_true",
                      help="Verify sizes live via Ollama/HF (requires internet)")
@@ -74,7 +80,7 @@ def _build_parser() -> argparse.ArgumentParser:
                      help="Discover trending GGUF models from HuggingFace (requires internet)")
     rec.add_argument("--all", action="store_true", dest="show_all",
                      help="Also show models that won't fit")
-    rec.add_argument("--catalog-url", metavar="URL",
+    rec.add_argument("--catalog-url", metavar="URL", default=cfg.get("catalog_url"),
                      help="Fetch the catalog from a remote endpoint (or PEYK_CATALOG_URL)")
     rec.add_argument("--no-cache", action="store_true",
                      help="Bypass the ~/.cache/peyk TTL cache for live sources")
@@ -302,7 +308,8 @@ def main(argv: list[str] | None = None) -> int:
     if not argv or (argv[0] not in SUBCOMMANDS and argv[0] not in ("-h", "--help", "--version")):
         argv = ["recommend"] + argv
 
-    args = _build_parser().parse_args(argv)
+    from .config import load_config
+    args = _build_parser(load_config()).parse_args(argv)
     plain = getattr(args, "plain", False)
     console = Console(no_color=plain, emoji=not plain)
     status = Console(stderr=True, no_color=plain, emoji=not plain)

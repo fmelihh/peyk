@@ -194,6 +194,20 @@ A policy file (`--policy policy.json`):
 }
 ```
 
+### Team defaults (`.peyk.json`)
+
+Pin defaults so you don't retype flags — handy for on-prem teams. peyk reads
+`./.peyk.json` then `~/.config/peyk/config.json` (CLI flags still override):
+
+```json
+{
+  "languages": "tr,en",
+  "use_case": "coding",
+  "context": 32768,
+  "catalog_url": "https://intranet.example/peyk/catalog.json"
+}
+```
+
 ### Deep hardware probe (`--deep` / `--sudo`)
 
 By default `peyk` reads hardware with portable Python (psutil) plus vendor CLIs.

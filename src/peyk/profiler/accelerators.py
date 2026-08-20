@@ -20,6 +20,7 @@ class AccelInfo:
     unified: bool = False
     count: int = 0
     driver: str | None = None
+    compute_cap: str | None = None
 
 
 def _run(cmd: list[str], timeout: int = 4) -> str:
@@ -32,13 +33,13 @@ def _run(cmd: list[str], timeout: int = 4) -> str:
 
 def _nvidia() -> AccelInfo | None:
     out = _run(
-        ["nvidia-smi", "--query-gpu=name,memory.total,driver_version",
+        ["nvidia-smi", "--query-gpu=name,memory.total,driver_version,compute_cap",
          "--format=csv,noheader,nounits"]
     )
     if not out.strip():
         return None
     # Aggregate VRAM across all GPUs — multi-GPU servers can shard a model.
-    total_vram, count, first_name, driver = 0.0, 0, None, None
+    total_vram, count, first_name, driver, cap = 0.0, 0, None, None, None
     for line in out.strip().splitlines():
         parts = [p.strip() for p in line.split(",")]
         if len(parts) < 2:
@@ -53,12 +54,14 @@ def _nvidia() -> AccelInfo | None:
             first_name = parts[0]
         if driver is None and len(parts) >= 3:
             driver = parts[2] or None
+        if cap is None and len(parts) >= 4:
+            cap = parts[3] or None
     if count == 0:
         return None
     name = first_name if count == 1 else f"{count}x {first_name}"
     return AccelInfo(
         Accelerator.NVIDIA, name, round(total_vram, 1), unified=False, count=count,
-        driver=driver,
+        driver=driver, compute_cap=cap,
     )
 
 

@@ -33,6 +33,7 @@ class HardwareProfile(BaseModel):
     disk_free_gb: float = 0.0                # free space where models download
     numa_nodes: int | None = None            # multi-socket NUMA topology (Linux)
     gpu_driver: str | None = None            # NVIDIA driver version
+    gpu_compute_cap: str | None = None       # NVIDIA compute capability, e.g. 8.9
     ram_type: str | None = None          # e.g. DDR5, LPDDR5 (deep probe)
     ram_speed_mtps: int | None = None     # transfer rate in MT/s (deep probe)
     ram_channels: int | None = None       # populated DIMMs / channels (deep probe)

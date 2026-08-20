@@ -30,6 +30,28 @@ def _numa_nodes() -> int | None:
         return None
 
 
+def _cpu_model() -> str | None:
+    """Best-effort CPU model string without the deep probe."""
+    system = platform.system()
+    if system == "Linux":
+        try:
+            with open("/proc/cpuinfo") as fh:
+                for line in fh:
+                    if line.startswith("model name"):
+                        return line.split(":", 1)[1].strip()
+        except OSError:
+            return None
+    elif system == "Darwin":
+        import subprocess
+        try:
+            out = subprocess.run(["sysctl", "-n", "machdep.cpu.brand_string"],
+                                 capture_output=True, text=True, timeout=3)
+            return out.stdout.strip() or None
+        except (OSError, subprocess.SubprocessError):
+            return None
+    return None
+
+
 def detect(deep: bool = False, allow_sudo: bool = False) -> HardwareProfile:
     vm = psutil.virtual_memory()
     ram_total = round(vm.total / GB, 1)
@@ -50,6 +72,7 @@ def detect(deep: bool = False, allow_sudo: bool = False) -> HardwareProfile:
     profile = HardwareProfile(
         os=platform.system(),
         arch=platform.machine(),
+        cpu_model=_cpu_model(),
         cpu_cores_physical=psutil.cpu_count(logical=False) or psutil.cpu_count() or 1,
         cpu_cores_logical=psutil.cpu_count(logical=True) or 1,
         cpu_flags=cpu_flags(),
@@ -62,6 +85,7 @@ def detect(deep: bool = False, allow_sudo: bool = False) -> HardwareProfile:
         accelerator_name=acc.name,
         gpu_count=acc.count,
         gpu_driver=acc.driver,
+        gpu_compute_cap=acc.compute_cap,
         vram_total_gb=acc.vram_gb,
         unified_memory=acc.unified,
     )

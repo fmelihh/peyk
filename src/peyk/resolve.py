@@ -35,6 +35,22 @@ def _score(query: str, variant: ModelVariant) -> float:
     return score
 
 
+def filter_candidates(query: str, candidates: list[ModelCandidate]) -> list[ModelCandidate]:
+    """Keep candidates whose family/model_id matches any query token.
+
+    Powers the `peyk <query>` shorthand (e.g. `peyk qwen` → only Qwen models).
+    """
+    q_tokens = _tokens(query)
+    if not q_tokens:
+        return candidates
+    out = []
+    for c in candidates:
+        hay = " ".join(_tokens(f"{c.family} " + " ".join(v.model_id for v in c.variants)))
+        if any(t in hay for t in q_tokens):
+            out.append(c)
+    return out
+
+
 def resolve_variant(
     query: str, candidates: list[ModelCandidate], prefer_quant: str = "Q4_K_M"
 ) -> ModelVariant | None:

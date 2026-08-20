@@ -61,6 +61,8 @@ def _build_parser() -> argparse.ArgumentParser:
     sub = p.add_subparsers(dest="command")
 
     rec = sub.add_parser("recommend", help="Recommend models for this (or a simulated) machine")
+    rec.add_argument("query", nargs="?",
+                     help="Optional family filter, e.g. `peyk qwen` or `peyk llama`")
     rec.add_argument("--use-case", choices=USE_CASES, help="Intended use case (scoring weights)")
     rec.add_argument("--languages", default="en", help="Comma-separated language codes, e.g. tr,en")
     rec.add_argument("--context", type=int, default=8192, help="Target context length in tokens")
@@ -168,6 +170,14 @@ def _cmd_recommend(args, console: Console, status: Console) -> int:
         status.print(f"[dim]Live benchmarks: {n} entries loaded.[/dim]" if n
                      else "[yellow]Live benchmarks: none loaded (set PEYK_BENCHMARKS_URL).[/yellow]")
     candidates = _catalog_for(args, status)
+    if args.query:
+        from .resolve import filter_candidates
+        filtered = filter_candidates(args.query, candidates)
+        if filtered:
+            candidates = filtered
+            status.print(f"[dim]Filtered to '{args.query}' ({len(candidates)} model(s)).[/dim]")
+        else:
+            status.print(f"[yellow]No models match '{args.query}'; showing all.[/yellow]")
     if args.discover:
         discovered = sum(1 for c in candidates for v in c.variants
                          if v.source == "hf-discovered")

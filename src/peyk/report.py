@@ -57,8 +57,11 @@ def _hardware_panel(hw) -> Panel:
             f"x{hw.ram_channels} DIMM" if hw.ram_channels else None) if p)
         facts.append(("RAM spec", spec))
     facts.append(("Accelerator", accel))
-    if hw.gpu_driver:
-        facts.append(("GPU driver", hw.gpu_driver))
+    if hw.gpu_driver or hw.gpu_compute_cap:
+        driver = " ".join(p for p in (
+            f"driver {hw.gpu_driver}" if hw.gpu_driver else None,
+            f"· CC {hw.gpu_compute_cap}" if hw.gpu_compute_cap else None) if p)
+        facts.append(("GPU", driver))
     if hw.vram_total_gb:
         note = f"  (across {hw.gpu_count} GPUs)" if hw.gpu_count > 1 else ""
         facts.append(("VRAM", f"{hw.vram_total_gb:.1f} GB{note}"))

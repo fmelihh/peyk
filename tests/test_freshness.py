@@ -4,7 +4,7 @@ from datetime import date, timedelta
 from peyk import report
 from peyk.cli import main
 from peyk.gpus import parse_gpu_arg
-from peyk.sources import CATALOG_META, build_catalog
+from peyk.sources import build_catalog
 
 
 def test_catalog_meta_populated_after_build():

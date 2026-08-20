@@ -39,6 +39,7 @@ class CuratedSource:
 
     def _load_remote(self) -> dict | None:
         from .. import cache
+        assert self._url is not None
         key = f"catalog:{self._url}"
         if self._use_cache:
             cached = cache.read_fresh(key, ttl=cache.SIZES_TTL)

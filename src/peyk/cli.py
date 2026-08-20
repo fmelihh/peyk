@@ -132,17 +132,21 @@ def _catalog_for(args, status: Console):
     offline = getattr(args, "offline", False) or not (
         getattr(args, "cross_check", False) or getattr(args, "discover", False)
     )
-    kwargs = dict(
-        offline=offline,
-        cross_check=getattr(args, "cross_check", False),
-        discover=getattr(args, "discover", False),
-        use_cache=not getattr(args, "no_cache", False),
-        catalog_url=getattr(args, "catalog_url", None),
-    )
-    if offline and not kwargs["catalog_url"]:
-        return build_catalog(**kwargs)
+    url = getattr(args, "catalog_url", None)
+
+    def _build():
+        return build_catalog(
+            offline=offline,
+            cross_check=getattr(args, "cross_check", False),
+            discover=getattr(args, "discover", False),
+            use_cache=not getattr(args, "no_cache", False),
+            catalog_url=url,
+        )
+
+    if offline and not url:
+        return _build()
     with status.status("[dim]Fetching catalog / sources…[/dim]", spinner="dots"):
-        return build_catalog(**kwargs)
+        return _build()
 
 
 def _cmd_recommend(args, console: Console, status: Console) -> int:

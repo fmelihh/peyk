@@ -287,6 +287,11 @@ def _scored_to_dict(s: ScoredModel) -> dict:
         "source": s.variant.source,
         "tier": s.fit.tier.value,
         "mem_need_gb": s.fit.mem_need_gb,
+        "mem_breakdown": {
+            "weights_gb": s.fit.weights_gb,
+            "kv_cache_gb": s.fit.kv_cache_gb,
+            "overhead_gb": s.fit.overhead_gb,
+        },
         "est_tokens_per_sec": s.fit.est_tokens_per_sec,
         "scores": s.scores,
         "quality_evidence": s.quality_evidence,

@@ -96,7 +96,8 @@ def classify(mem_need: float, pool_gb: float) -> FitTier:
 
 def estimate_fit(variant: ModelVariant, hw: HardwareProfile, context: int) -> FitResult:
     ctx = min(context, variant.context_max)
-    mem_need = memory_need_gb(variant, ctx)
+    kv = kv_cache_gb(ctx, variant)
+    mem_need = variant.file_size_gb + kv + RUNTIME_OVERHEAD_GB
     tier = classify(mem_need, hw.memory_pool_gb)
     tps = estimate_tokens_per_sec(variant, hw, _effective_bandwidth(mem_need, hw))
     return FitResult(
@@ -104,4 +105,7 @@ def estimate_fit(variant: ModelVariant, hw: HardwareProfile, context: int) -> Fi
         mem_need_gb=round(mem_need, 2),
         tier=tier,
         est_tokens_per_sec=round(tps, 1),
+        weights_gb=round(variant.file_size_gb, 2),
+        kv_cache_gb=round(kv, 2),
+        overhead_gb=RUNTIME_OVERHEAD_GB,
     )

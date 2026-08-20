@@ -119,6 +119,10 @@ class FitResult(BaseModel):
     mem_need_gb: float
     tier: FitTier
     est_tokens_per_sec: float
+    # Transparent breakdown of mem_need_gb, so estimates are auditable.
+    weights_gb: float = 0.0
+    kv_cache_gb: float = 0.0
+    overhead_gb: float = 0.0
 
 
 class ScoredModel(BaseModel):

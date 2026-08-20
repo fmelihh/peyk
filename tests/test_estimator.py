@@ -54,3 +54,10 @@ def test_context_capped_at_variant_max(small_variant, laptop_cpu):
     fit = estimator.estimate_fit(v, laptop_cpu, 200000)
     capped = estimator.memory_need_gb(v, 4096)
     assert abs(fit.mem_need_gb - round(capped, 2)) < 0.01
+
+
+def test_fit_breakdown_sums_to_need(small_variant, laptop_cpu):
+    fit = estimator.estimate_fit(small_variant, laptop_cpu, 8192)
+    total = fit.weights_gb + fit.kv_cache_gb + fit.overhead_gb
+    assert abs(total - fit.mem_need_gb) < 0.05
+    assert fit.weights_gb == small_variant.file_size_gb

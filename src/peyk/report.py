@@ -102,10 +102,12 @@ def _tier_table(rec: Recommendation, show_all: bool = False) -> Table:
     table.add_column("Params", justify="right")
     table.add_column("Quant")
     table.add_column("Memory", justify="right")
+    table.add_column("Load", no_wrap=True)
     table.add_column("Speed t/s", justify="right")
     table.add_column("Score", justify="right")
     table.add_column("Source", no_wrap=True)
 
+    pool = rec.hw.memory_pool_gb or 1.0
     for tier in tiers:
         for s in rec.by_tier(tier):
             v = s.variant
@@ -117,6 +119,7 @@ def _tier_table(rec: Recommendation, show_all: bool = False) -> Table:
                 f"{v.params_b:g}B",
                 v.quant,
                 f"{s.fit.mem_need_gb:.1f} GB",
+                theme.bar(s.fit.mem_need_gb / pool),
                 Text(f"~{s.fit.est_tokens_per_sec:.0f}",
                      style=theme.speed_color(s.fit.est_tokens_per_sec)),
                 Text(f"{s.overall:.0f}", style=f"bold {theme.ACCENT}"),

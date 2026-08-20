@@ -230,8 +230,9 @@ peyk --json --use-case chat | jq '.models[] | select(.tier=="FITS") | .model' | 
   estimated memory bandwidth. Models that fit in memory but exceed free disk
   (you still have to download them) are flagged.
 - **Feasibility table** — every model reduced to its best runnable quantization,
-  grouped into `RUNS WELL` / `TIGHT` / `WON'T FIT`, with estimated memory,
-  estimated speed, an overall score, and a **Source** column
+  grouped into `RUNS WELL` / `TIGHT` / `WON'T FIT`, with estimated memory, a
+  colour-coded **Load** bar (how much of your memory pool it uses), estimated
+  speed, an overall score, and a **Source** column
   (`curated` / `ollama` / `HF✓` / `HF discover`).
 - **Top-by-criterion** tables — best models for Speed, Quality, Language,
   Context, and License.

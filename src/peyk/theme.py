@@ -81,3 +81,11 @@ ACCEL_ICON = {"APPLE": "", "NVIDIA": "▲", "AMD": "△", "NONE": "▫"}
 
 def accel_icon(accelerator: str) -> str:
     return ACCEL_ICON.get(accelerator, "▫")
+
+
+def bar(fraction: float, width: int = 8) -> Text:
+    """A compact colour-coded usage bar (fraction of a resource used)."""
+    fraction = max(0.0, min(1.0, fraction))
+    filled = round(fraction * width)
+    color = GREEN if fraction < 0.70 else YELLOW if fraction < 0.95 else RED
+    return Text("█" * filled, style=color) + Text("░" * (width - filled), style=MUTED)
